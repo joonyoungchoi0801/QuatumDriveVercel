@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './sidebar.module.scss';
-// import kebabIcon from '@/assets/kebab.svg';
+import kebabIcon from '@/assets/kebab.svg';
 
 const sidebarFirstItems = ['모든 파일', '최근', '즐겨찾기', '공유'];
 const sidebarSecondItems = ['사진', '동영상', '문서', '음악', '암호 폴더'];
@@ -71,7 +71,8 @@ function Sidebar() {
         aria-label='Resize sidebar'
         tabIndex={0}
       >
-        <div className={styles.bar} />
+        {/* <div className={styles.bar} /> */}
+        <img src={kebabIcon} alt='kebab' />
       </button>
     </div>
   );
