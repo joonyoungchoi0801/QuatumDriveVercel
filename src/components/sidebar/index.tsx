@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './sidebar.module.scss';
-import kebabIcon from '@/assets/kebab.svg';
 
 const sidebarFirstItems = ['모든 파일', '최근', '즐겨찾기', '공유'];
 const sidebarSecondItems = ['사진', '동영상', '문서', '음악', '암호 폴더'];
@@ -9,12 +8,16 @@ function Sidebar() {
   const [sidebarWidth, setSidebarWidth] = useState(240);
   const sideBarRef = useRef(false);
 
+  const MIN_WIDTH = 200;
+  const MAX_WIDTH = 500;
+
   const handleMouseDown = () => {
     sideBarRef.current = true;
   };
   const handleMouseMove = (e: MouseEvent) => {
     if (sideBarRef.current) {
-      setSidebarWidth(e.clientX);
+      const newWidth = Math.min(Math.max(e.clientX, MIN_WIDTH), MAX_WIDTH);
+      setSidebarWidth(newWidth);
     }
   };
 
@@ -25,13 +28,15 @@ function Sidebar() {
   const handleTouchStart = (e: React.TouchEvent) => {
     sideBarRef.current = true;
     const touch = e.touches[0];
-    setSidebarWidth(touch.clientX);
+    const newWidth = Math.min(Math.max(touch.clientX, MIN_WIDTH), MAX_WIDTH);
+    setSidebarWidth(newWidth);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (sideBarRef.current) {
       const touch = e.touches[0];
-      setSidebarWidth(touch.clientX);
+      const newWidth = Math.min(Math.max(touch.clientX, MIN_WIDTH), MAX_WIDTH);
+      setSidebarWidth(newWidth);
     }
   };
 
@@ -71,8 +76,7 @@ function Sidebar() {
         aria-label='Resize sidebar'
         tabIndex={0}
       >
-        {/* <div className={styles.bar} /> */}
-        <img src={kebabIcon} alt='kebab' />
+        <div className={styles.bar} />
       </button>
     </div>
   );

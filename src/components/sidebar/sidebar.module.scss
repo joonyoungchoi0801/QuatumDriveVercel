@@ -15,8 +15,10 @@
   cursor: ew-resize;
   border: none;
   margin-top: -6rem;
-  img {
-    height: 2.3rem;
+  .bar {
+    width: 0.3rem;
+    height: 2rem;
+    background-color: #dfdfdf;
   }
 }
 
