@@ -23,6 +23,7 @@ module.exports = {
   plugins: ['react', 'react-hooks', 'jsx-a11y', '@typescript-eslint'],
   rules: {
     'react/react-in-jsx-scope': 'off',
+    'jsx-a11y/no-static-element-interactions': 'off',
   },
   settings: {
     react: { version: 'detect' },

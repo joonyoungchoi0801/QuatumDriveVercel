@@ -1,0 +1,28 @@
+.sidebar {
+  display: flex;
+  position: fixed;
+  top: 6rem;
+  left: 0;
+  height: 100%;
+  z-index: 20;
+}
+.sidebarResize {
+  width: 1rem;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ew-resize;
+  border: none;
+  .bar {
+    width: 0.3rem;
+    height: 2rem;
+    background-color: #dfdfdf;
+  }
+}
+
+.sidebarMenu {
+  display: flex;
+  flex-direction: column;
+  border-right: 0.1rem solid rgba(0, 0, 0, 0.1);
+}
