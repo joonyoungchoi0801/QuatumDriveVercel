@@ -22,8 +22,87 @@
   }
 }
 
-.sidebarMenu {
+.sidebarLeft {
   display: flex;
   flex-direction: column;
   border-right: 0.1rem solid rgba(0, 0, 0, 0.1);
+  background-color: #f6f7fa;
+  position: relative;
+  .sidebarMenu {
+    display: flex;
+    flex-direction: column;
+    margin-top: 3rem;
+    gap: 2.5rem;
+  }
+  .sidebarBottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 10.7rem;
+    padding: 1.5rem 2rem 1.8rem;
+    border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+.capacityArea {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 0.7rem;
+  .capacityText {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    .capacity {
+      color: #1e1e1e;
+      font-size: 1.5rem;
+      line-height: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.25px;
+    }
+    .capacityInfo {
+      color: #9398a0;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: -0.25px;
+      line-height: 1.7rem;
+    }
+  }
+  .graph {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    height: 0.5rem;
+    border-radius: 0.3rem;
+    background-color: #dadde2;
+    .bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      border-radius: 0.3rem;
+      background-color: #4078ff;
+    }
+  }
+}
+
+.menu {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.2rem;
+  color: #1e1e1e;
+  font-weight: bold;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.menu.clicked {
+  color: #4078ff;
 }

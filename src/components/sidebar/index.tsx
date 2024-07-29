@@ -1,15 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './sidebar.module.scss';
+import Menu from './menu';
 
-const sidebarFirstItems = ['모든 파일', '최근', '즐겨찾기', '공유'];
-const sidebarSecondItems = ['사진', '동영상', '문서', '음악', '암호 폴더'];
+const sidebarFirstItems = [
+  { title: '모든 파일', href: '/' },
+  { title: '최근', href: '/recent' },
+  { title: '즐겨찾기', href: '/favorite' },
+  { title: '공유', href: '/share' },
+];
+const sidebarSecondItems = [
+  { title: '사진', href: '/picture' },
+  { title: '동영상', href: '/video' },
+  { title: '문서', href: '/document' },
+  { title: '음악', href: '/music' },
+  { title: '암호 폴더', href: '/encrypted' },
+];
 
 function Sidebar() {
-  const [sidebarWidth, setSidebarWidth] = useState(240);
+  const [selectedMenu, setSelectedMenu] = useState('모든 파일');
+  const [sidebarWidth, setSidebarWidth] = useState(220);
   const sideBarRef = useRef(false);
 
-  const MIN_WIDTH = 200;
+  const MIN_WIDTH = 180;
   const MAX_WIDTH = 500;
+
+  const TOTAL_CAPACITY = 100;
+  const USED_CAPACITY = 61.5;
+  const FREE_CAPACITY = TOTAL_CAPACITY - USED_CAPACITY;
+  const CAPACITY_PERCENTAGE = (USED_CAPACITY / TOTAL_CAPACITY) * 100;
 
   const handleMouseDown = () => {
     sideBarRef.current = true;
@@ -44,6 +62,10 @@ function Sidebar() {
     sideBarRef.current = false;
   };
 
+  const handleClickMenu = (menu: string) => {
+    setSelectedMenu(menu);
+  };
+
   useEffect(() => {
     const handleDocumentMouseMove = (e: MouseEvent) => handleMouseMove(e);
     const handleDocumentMouseUp = () => handleMouseUp();
@@ -59,14 +81,47 @@ function Sidebar() {
 
   return (
     <div className={styles.sidebar}>
-      <ul className={styles.sidebarMenu} style={{ width: sidebarWidth }}>
-        {sidebarFirstItems.map((item, i) => (
-          <li key={i}>{item}</li>
-        ))}
-        {sidebarSecondItems.map((item, i) => (
-          <li key={i}>{item}</li>
-        ))}
-      </ul>
+      <div className={styles.sidebarLeft} style={{ width: sidebarWidth }}>
+        <ul className={styles.sidebarMenu}>
+          {sidebarFirstItems.map((item, i) => (
+            <Menu
+              key={i}
+              item={item.title}
+              href={item.href}
+              onMenuClick={handleClickMenu}
+              isSelected={item.title === selectedMenu}
+            />
+          ))}
+          {sidebarSecondItems.map((item, i) => (
+            <Menu
+              key={i}
+              item={item.title}
+              href={item.href}
+              onMenuClick={handleClickMenu}
+              isSelected={item.title === selectedMenu}
+            />
+          ))}
+        </ul>
+        <div className={styles.sidebarBottom} style={{ width: sidebarWidth }}>
+          <div className={styles.capacityArea}>
+            <div className={styles.capacityText}>
+              <div className={styles.capacity}>
+                <span style={{ color: '#4078ff' }}>{USED_CAPACITY}GB</span>
+                <span> / {TOTAL_CAPACITY}GB</span>
+              </div>
+              <span className={styles.capacityInfo}>
+                여유 {FREE_CAPACITY}GB
+              </span>
+            </div>
+            <span className={styles.graph}>
+              <span
+                className={styles.bar}
+                style={{ width: `${CAPACITY_PERCENTAGE}%` }}
+              />
+            </span>
+          </div>
+        </div>
+      </div>
       <button
         className={styles.sidebarResize}
         onMouseDown={handleMouseDown}

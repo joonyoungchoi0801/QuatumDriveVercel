@@ -7,6 +7,7 @@ export default function Router() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/:type' element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

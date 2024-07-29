@@ -6,7 +6,7 @@ import downIcon from '@/assets/arrow-down.svg';
 function Header() {
   return (
     <header className={styles.header}>
-      <a className={styles.headerLogo} href='/home'>
+      <a className={styles.headerLogo} href='/'>
         <img
           className={styles.headerLogo_img}
           src={quantumlogo}
