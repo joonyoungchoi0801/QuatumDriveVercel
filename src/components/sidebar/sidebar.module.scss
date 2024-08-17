@@ -2,6 +2,7 @@
   display: flex;
   position: fixed;
   top: 6rem;
+  bottom: 0;
   left: 0;
   height: 100%;
   z-index: 20;
@@ -28,11 +29,30 @@
   border-right: 0.1rem solid rgba(0, 0, 0, 0.1);
   background-color: #f6f7fa;
   position: relative;
+
   .sidebarMenu {
     display: flex;
     flex-direction: column;
     margin-top: 3rem;
     gap: 2.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - 19.7rem);
+    transition: margin-top 0.3s ease;
+  }
+  .sidebarMenu::after {
+    margin-top: 0;
+  }
+  .sidebarMenu::-webkit-scrollbar {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+  .sidebarMenu::-webkit-scrollbar-thumb {
+    background-color: #d1d1d1;
+    border-radius: 0.8rem;
+  }
+  .sidebarMenu::-webkit-scrollbar-track {
+    background-color: #fafafa;
   }
   .sidebarBottom {
     display: flex;

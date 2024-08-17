@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './sidebar.module.scss';
 import Menu from './menu';
+import useSidebarStore from '@/store/sidebarStore';
 
 const sidebarFirstItems = [
   { title: '모든 파일', href: '/' },
@@ -17,12 +18,13 @@ const sidebarSecondItems = [
 ];
 
 function Sidebar() {
+  const { sidebarWidth, setSidebarWidth } = useSidebarStore();
   const [selectedMenu, setSelectedMenu] = useState('모든 파일');
-  const [sidebarWidth, setSidebarWidth] = useState(220);
+  // const [sidebarWidth, setSidebarWidth] = useState(220);
   const sideBarRef = useRef(false);
 
   const MIN_WIDTH = 180;
-  const MAX_WIDTH = 500;
+  const MAX_WIDTH = 280;
 
   const TOTAL_CAPACITY = 100;
   const USED_CAPACITY = 61.5;

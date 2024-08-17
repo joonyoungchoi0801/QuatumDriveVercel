@@ -1,0 +1,120 @@
+.task {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6rem;
+  padding: 2.5rem 2rem 2.5rem 2.5rem;
+  min-width: 120rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.taskHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem;
+  .taskTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    .path {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      max-width: 50%;
+      .pathText {
+        color: #1e1e1e;
+        line-height: 2rem;
+        font-size: 1.6rem;
+        font-weight: 600;
+      }
+      .pathText:last-child {
+        font-weight: 900;
+        font-size: 1.8rem;
+      }
+    }
+    .searchInput {
+      display: flex;
+      align-items: center;
+      width: 30rem;
+      height: 3.2rem;
+      border-radius: 0.4rem;
+      overflow: hidden;
+      position: relative;
+      border: 0.1rem solid #eff1f6;
+      background-color: #eff1f6;
+      padding: 0.8rem 7.6rem 0.8rem 3.4rem;
+      &:focus-within {
+        border: 1px solid #4078ff;
+      }
+      .searchIcon {
+        position: absolute;
+        top: 0.8rem;
+        left: 1.2rem;
+        width: 1.6rem;
+        height: 1.6rem;
+      }
+      .input {
+        background-color: #eff1f6;
+        border: none;
+        outline: none;
+        height: 100%;
+        caret-color: #4078ff;
+        &::placeholder {
+          font-size: 1.1rem;
+        }
+        &:focus {
+          font-size: 1.2rem;
+        }
+      }
+      .searchBtn {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.04);
+        width: 3.4rem;
+        border: none;
+        cursor: pointer;
+        img {
+          width: 1.6rem;
+          height: 1.6rem;
+        }
+      }
+    }
+  }
+}
+
+.taskBtn {
+  padding: 2rem;
+  border-bottom: 1px solid #ebebeb;
+  width: 100%;
+}
+
+.mainArea {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  height: calc(100vh - 19.3rem);
+  position: relative;
+}
+.thumbnailGridWrapper {
+  display: grid;
+  height: 100%;
+  grid-template-columns: repeat(auto-fill, 15rem);
+  gap: 1rem;
+  overflow-y: auto;
+}
+.infoArea {
+  display: flex;
+  flex-direction: column;
+  width: 28rem;
+  height: 100%;
+  border-left: 1px solid #ebebeb;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
