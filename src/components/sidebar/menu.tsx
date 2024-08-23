@@ -5,14 +5,12 @@ interface MenuProps {
   item: string;
   href: string;
   isSelected: boolean;
-  onMenuClick: (item: string) => void;
 }
 
-function Menu({ item, href, isSelected, onMenuClick }: MenuProps) {
+function Menu({ item, href, isSelected }: MenuProps) {
   const navigate = useNavigate();
   const handleNavigateClick = (item: string) => {
     navigate(href, { replace: true });
-    onMenuClick(item);
   };
 
   return (

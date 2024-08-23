@@ -27,6 +27,7 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/no-noninteractive-element-interactions': 'off',
     'react/prop-types': 'off',
+    'react-hooks/exhaustive-deps': 'off',
   },
   settings: {
     react: { version: 'detect' },

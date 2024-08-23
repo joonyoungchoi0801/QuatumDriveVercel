@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Home from './pages/home';
+import Trash from './pages/trash';
+import Share from './pages/share';
 
 export default function Router() {
   return (
@@ -8,6 +10,8 @@ export default function Router() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/:type' element={<Home />} />
+        <Route path='/trash' element={<Trash />} />
+        <Route path='/share' element={<Share />} />
       </Routes>
     </BrowserRouter>
   );

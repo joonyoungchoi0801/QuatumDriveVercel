@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './sidebar.module.scss';
 import Menu from './menu';
 import useSidebarStore from '@/store/sidebarStore';
+import trash from '@/assets/trash.svg';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const sidebarFirstItems = [
   { title: '모든 파일', href: '/' },
@@ -10,17 +12,18 @@ const sidebarFirstItems = [
   { title: '공유', href: '/share' },
 ];
 const sidebarSecondItems = [
-  { title: '사진', href: '/picture' },
+  { title: '사진', href: '/image' },
   { title: '동영상', href: '/video' },
   { title: '문서', href: '/document' },
-  { title: '음악', href: '/music' },
+  { title: '음악', href: '/audio' },
   { title: '암호 폴더', href: '/encrypted' },
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { sidebarWidth, setSidebarWidth } = useSidebarStore();
   const [selectedMenu, setSelectedMenu] = useState('모든 파일');
-  // const [sidebarWidth, setSidebarWidth] = useState(220);
   const sideBarRef = useRef(false);
 
   const MIN_WIDTH = 180;
@@ -64,8 +67,12 @@ function Sidebar() {
     sideBarRef.current = false;
   };
 
-  const handleClickMenu = (menu: string) => {
-    setSelectedMenu(menu);
+  // const handleClickMenu = (menu: string) => {
+  //   setSelectedMenu(menu);
+  // };
+
+  const handleClickTrash = () => {
+    navigate('./trash');
   };
 
   useEffect(() => {
@@ -79,8 +86,18 @@ function Sidebar() {
       document.removeEventListener('mousemove', handleDocumentMouseMove);
       document.removeEventListener('mouseup', handleDocumentMouseUp);
     };
-  }, []);
+  }, [handleMouseMove, handleMouseUp]);
 
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const foundMenu = [...sidebarFirstItems, ...sidebarSecondItems].find(
+      (item) => item.href === currentPath
+    );
+
+    if (foundMenu) {
+      setSelectedMenu(foundMenu.title);
+    }
+  }, [location.pathname]);
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarLeft} style={{ width: sidebarWidth }}>
@@ -90,7 +107,6 @@ function Sidebar() {
               key={i}
               item={item.title}
               href={item.href}
-              onMenuClick={handleClickMenu}
               isSelected={item.title === selectedMenu}
             />
           ))}
@@ -99,7 +115,6 @@ function Sidebar() {
               key={i}
               item={item.title}
               href={item.href}
-              onMenuClick={handleClickMenu}
               isSelected={item.title === selectedMenu}
             />
           ))}
@@ -121,6 +136,10 @@ function Sidebar() {
                 style={{ width: `${CAPACITY_PERCENTAGE}%` }}
               />
             </span>
+          </div>
+          <div className={styles.trashArea} onClick={handleClickTrash}>
+            <img className={styles.trashIcon} src={trash} alt='trash' />
+            <span className={styles.trashText}>휴지통</span>
           </div>
         </div>
       </div>

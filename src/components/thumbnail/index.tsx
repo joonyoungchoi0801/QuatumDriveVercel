@@ -13,26 +13,39 @@ import ppt from '@/assets/file/ppt.svg';
 import file from '@/assets/file/file.svg';
 import clickstar from '@/assets/file/clickstar.svg';
 import square from '@/assets/file/square.svg';
+import { useNavigate } from 'react-router-dom';
 
 interface ThumbnailProps {
-  type: string;
-  title: string;
+  type: string | null;
+  name: string;
   image?: string;
   isFavorite: boolean;
+  href: string;
 }
 
-function Thumbnail({ type, title, image, isFavorite }: ThumbnailProps) {
+function Thumbnail({ type, name, image, isFavorite, href }: ThumbnailProps) {
   const [isHover, setIsHover] = useState(false);
+  const navigate = useNavigate();
+  const handleThumbnailClick = () => {
+    navigate(href);
+  };
+
+  const isImg = type === 'png' || type === 'jpg' || type === 'jpeg';
+  const isMusic = type === 'mp3' || type === 'wav' || type === 'flac';
+  const isVideo = type === 'mp4' || type === 'avi' || type === 'wmv';
+
   let thumb;
-  if (type === 'folder') {
-    thumb = folder;
-  } else if (type === 'image') {
+  if (image) {
     thumb = image;
-  } else if (type === 'music') {
+  } else if (type === 'directory') {
+    thumb = folder;
+  } else if (isImg) {
+    thumb = imageIcon;
+  } else if (isMusic) {
     thumb = music;
   } else if (type === 'pdf') {
     thumb = pdf;
-  } else if (type === 'video') {
+  } else if (isVideo) {
     thumb = video;
   } else if (type === 'word') {
     thumb = word;
@@ -42,8 +55,6 @@ function Thumbnail({ type, title, image, isFavorite }: ThumbnailProps) {
     thumb = excel;
   } else if (type === 'ppt') {
     thumb = ppt;
-  } else if (type === 'image') {
-    thumb = imageIcon;
   } else {
     thumb = file;
   }
@@ -54,6 +65,7 @@ function Thumbnail({ type, title, image, isFavorite }: ThumbnailProps) {
         className={styles.thumbnail}
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
+        onClick={handleThumbnailClick}
       >
         <img src={thumb} className={styles.thumb} alt='thumbnail' />
         {isFavorite && (
@@ -61,7 +73,7 @@ function Thumbnail({ type, title, image, isFavorite }: ThumbnailProps) {
         )}
         {/* {isHover && <img src={square} alt='square' className={styles.square} />} */}
       </div>
-      <div className={styles.title}>{title}</div>
+      <div className={styles.title}>{name}</div>
     </div>
   );
 }

@@ -126,3 +126,19 @@
 .menu.clicked {
   color: #4078ff;
 }
+
+.trashArea {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 2rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+  .trashIcon {
+    width: 2rem;
+    height: 2rem;
+  }
+}
