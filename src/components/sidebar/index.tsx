@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './sidebar.module.scss';
 import Menu from './menu';
 import useSidebarStore from '@/store/sidebarStore';
@@ -37,16 +37,19 @@ function Sidebar() {
   const handleMouseDown = () => {
     sideBarRef.current = true;
   };
-  const handleMouseMove = (e: MouseEvent) => {
-    if (sideBarRef.current) {
-      const newWidth = Math.min(Math.max(e.clientX, MIN_WIDTH), MAX_WIDTH);
-      setSidebarWidth(newWidth);
-    }
-  };
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (sideBarRef.current) {
+        const newWidth = Math.min(Math.max(e.clientX, MIN_WIDTH), MAX_WIDTH);
+        setSidebarWidth(newWidth);
+      }
+    },
+    [setSidebarWidth]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     sideBarRef.current = false;
-  };
+  }, []);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     sideBarRef.current = true;

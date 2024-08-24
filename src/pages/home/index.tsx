@@ -179,16 +179,16 @@ function Home() {
       ? { justifyContent: 'flex-end' }
       : { justifyContent: 'space-between' };
 
-  // const username = 'joeplay0801@naver.com';
-  // const password = 'jyc08010801!';
+  const username = 'joeplay0801@naver.com';
+  const password = 'jyc08010801!';
 
-  // postLogin(username, password)
-  //   .then((response) => {
-  //     console.log('Login successful:', response.data);
-  //   })
-  //   .catch((error) => {
-  //     console.error('Login failed:', error);
-  //   });
+  postLogin(username, password)
+    .then((response) => {
+      console.log('Login successful:', response.data);
+    })
+    .catch((error) => {
+      console.error('Login failed:', error);
+    });
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
@@ -217,7 +217,9 @@ function Home() {
         type: data.extension,
         createdAt: data.createdAt,
         href: data.isDirectory
-          ? `/?resourceKey=${btoa(currentpath + '/' + data.name)}&id=${data.id}`
+          ? resourceKey
+            ? `/?resourceKey=${btoa(currentpath + '/' + data.name)}&id=${data.id}`
+            : `/?resourceKey=${data.resourcekey}&id=${data.id}`
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,

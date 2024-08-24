@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import styles from './share.module.scss';
@@ -7,7 +7,7 @@ import Thumbnail from '@/components/thumbnail';
 import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
-import { getFile, getKeywordFile } from '@/api/fileAPI';
+import { getFile } from '@/api/fileAPI';
 import { postLogin } from '@/api/authAPI';
 import Button from '@/components/button';
 
@@ -15,7 +15,7 @@ import uparrow from '@/assets/uparrow.svg';
 import downarrow from '@/assets/downarrow.svg';
 import info from '@/assets/info.svg';
 import { FileData, ThumbnailData } from './share.type';
-import { type } from 'os';
+import { debounce } from 'lodash';
 
 interface SortOptionProps {
   setSortType: (type: string) => void;
@@ -80,7 +80,15 @@ function Home() {
   const [isSortButtonClicked, setIsSortButtonClicked] = useState(false);
   const [isMethodButtonClicked, setIsMethodButtonClicked] = useState(false);
   const [thumbnailData, setThumbnailData] = useState<ThumbnailData[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasNext, setHasNext] = useState(true);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
+
+  const prevShareTypeRef = useRef(shareType);
+  const prevSortTypeRef = useRef(sortType);
+  const prevMethodTypeRef = useRef(methodType);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+
   const setKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
     setSearchKeyword(keyword);
@@ -132,36 +140,78 @@ function Home() {
       console.error('Login failed:', error);
     });
 
+  const fetchMoreData = useCallback(async () => {
+    if (!hasNext) return;
+    try {
+      const fileData = await getFile(
+        null,
+        shareType,
+        page * 50,
+        50,
+        sortTypeApiList[sortType],
+        optionTypeApiList[methodType]
+      );
+
+      const transformedData = fileData.data.map((data: FileData) => ({
+        id: data.id,
+        name: data.name,
+        type: data.extension,
+        createdAt: data.createdAt,
+        href: data.isDirectory
+          ? `/?resourceKey=${data.resourcekey}&id=${data.id}`
+          : `/download/${data.id}`,
+        isFavorite: data.isFavorite,
+        image: data.thumbnail,
+      }));
+
+      setThumbnailData((prevData) =>
+        page === 0 ? transformedData : [...prevData, ...transformedData]
+      );
+      setHasNext(fileData.data.length === 50);
+    } catch (error) {
+      alert('데이터를 불러오는데 실패했습니다.');
+    }
+  }, [hasNext, page, shareType, sortType, methodType]);
   useEffect(() => {
-    async function fetchAllData() {
-      try {
-        const fileData = await getFile(
-          null,
-          shareType,
-          0,
-          50,
-          sortTypeApiList[sortType],
-          optionTypeApiList[methodType]
-        );
-        const transformedData = fileData.data.map((data: FileData) => ({
-          id: data.id,
-          name: data.name,
-          type: data.extension,
-          createdAt: data.createdAt,
-          href: data.isDirectory
-            ? `/?resourceKey=${data.resourcekey}&id=${data.id}`
-            : `/download/${data.id}`,
-          isFavorite: data.isFavorite,
-          image: data.thumbnail,
-        }));
-        setThumbnailData(transformedData);
-      } catch (error) {
-        alert('파일을 불러오는데 실패했습니다.');
+    if (
+      prevShareTypeRef.current !== shareType ||
+      prevSortTypeRef.current !== sortType ||
+      prevMethodTypeRef.current !== methodType
+    ) {
+      setThumbnailData([]);
+      setPage(0);
+      setHasNext(true);
+    }
+    fetchMoreData();
+    prevShareTypeRef.current = shareType;
+    prevSortTypeRef.current = sortType;
+    prevMethodTypeRef.current = methodType;
+  }, [shareType, sortType, methodType, page, fetchMoreData]);
+
+  useEffect(() => {
+    const handleScroll = debounce(() => {
+      if (gridRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = gridRef.current;
+
+        if (scrollTop + clientHeight >= scrollHeight - 100) {
+          if (hasNext) {
+            setPage((prevPage) => prevPage + 1);
+          }
+        }
       }
+    }, 200);
+    const currentGrid = gridRef.current;
+
+    if (currentGrid) {
+      currentGrid.addEventListener('scroll', handleScroll);
     }
 
-    fetchAllData();
-  }, [shareType, sortType, methodType]);
+    return () => {
+      if (currentGrid) {
+        currentGrid.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [hasNext, page]);
 
   return (
     <>
@@ -238,7 +288,7 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className={styles.mainArea}>
+        <div className={styles.mainArea} ref={gridRef}>
           <div className={styles.thumbnailGridWrapper} style={gridStyle}>
             {thumbnailData.map((data) => (
               <Thumbnail
