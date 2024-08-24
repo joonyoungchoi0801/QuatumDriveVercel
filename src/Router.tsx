@@ -9,7 +9,8 @@ export default function Router() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/:type' element={<Home />} />
+        <Route path='/home' element={<Home />} />
+        <Route path='/home/:type' element={<Home />} />
         <Route path='/trash' element={<Trash />} />
         <Route path='/share' element={<Share />} />
       </Routes>

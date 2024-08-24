@@ -17,6 +17,7 @@ import uparrow from '@/assets/uparrow.svg';
 import downarrow from '@/assets/downarrow.svg';
 import info from '@/assets/info.svg';
 import { FileData, ThumbnailData } from './home.type';
+import { utf8_to_b64, b64_to_utf8 } from '@/utils/base64';
 
 const sortTypeList = ['날짜', '이름', '용량'];
 const sortTypeApiList: { [key: string]: string } = {
@@ -107,8 +108,11 @@ function Home() {
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
   const keyword = searchParams.get('keyword');
-  const resourceKey = searchParams.get('resourceKey');
-
+  const encodedResourceKey = searchParams.get('resourceKey');
+  let resourceKey = encodedResourceKey
+    ? decodeURIComponent(encodedResourceKey)
+    : '';
+  resourceKey = resourceKey.replace(/ /g, '+');
   const prevTypeRef = useRef(type);
   const prevKeywordRef = useRef(keyword);
   const prevResourceKeyRef = useRef(resourceKey);
@@ -122,7 +126,7 @@ function Home() {
   };
 
   const path = resourceKey
-    ? `QuantumBox${atob(resourceKey as string)}`
+    ? `QuantumBox${b64_to_utf8(resourceKey as string)}`
     : 'QuantumBox';
   const replacedPath = path.replace(/\//g, ' > ');
   const pathArray = replacedPath.split(' ');
@@ -141,7 +145,7 @@ function Home() {
       .replace(/>/g, '/');
     const normalizedPath = clickedPath.replace(/\/{2,}/g, '/');
 
-    const base64Path = btoa(normalizedPath);
+    const base64Path = utf8_to_b64(normalizedPath);
 
     navigate(`/?resourceKey=${base64Path}`);
   };
@@ -192,7 +196,9 @@ function Home() {
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
-    const currentpath = resourceKey ? `${atob(resourceKey as string)}` : '';
+    console.log(resourceKey);
+    console.log(b64_to_utf8(resourceKey as string));
+    const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
     try {
       const fileData = !keyword
         ? await getFile(
@@ -217,9 +223,9 @@ function Home() {
         type: data.extension,
         createdAt: data.createdAt,
         href: data.isDirectory
-          ? resourceKey
-            ? `/?resourceKey=${btoa(currentpath + '/' + data.name)}&id=${data.id}`
-            : `/?resourceKey=${data.resourcekey}&id=${data.id}`
+          ? type
+            ? `/home/resourceKey=${data.resourcekey}&id=${data.id}`
+            : `/home?resourceKey=${utf8_to_b64(currentpath + '/' + data.name)}&id=${data.id}`
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,
@@ -230,6 +236,7 @@ function Home() {
       );
       setHasNext(fileData.data.length === 50);
     } catch (error) {
+      console.log(error);
       alert('데이터를 불러오는데 실패했습니다.');
     }
   }, [hasNext, keyword, page, resourceKey, sortType, type, methodType]);
@@ -381,7 +388,7 @@ function Home() {
                 key={data.id}
                 type={data.type}
                 name={data.name}
-                isFavorite={true}
+                isFavorite={data.isFavorite}
                 href={data.href}
                 image={data?.image}
               />

@@ -1,17 +1,17 @@
-function encodeBase64(str: string) {
-  return btoa(
-    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
-      return String.fromCharCode(parseInt(p1, 16));
-    })
-  );
-}
-function decodeBase64(encodedStr: string) {
-  try {
-    return atob(encodedStr);
-  } catch (e) {
-    console.error('Error decoding Base64 string:', e);
-    return null;
-  }
+import * as base64js from 'base64-js';
+
+export function utf8_to_b64(str: string) {
+  const utf8Bytes = new TextEncoder().encode(str);
+
+  return base64js.fromByteArray(utf8Bytes);
 }
 
-export { encodeBase64, decodeBase64 };
+export function b64_to_utf8(str: string) {
+  try {
+    const byteArray = base64js.toByteArray(str);
+    return new TextDecoder('utf-8').decode(byteArray);
+  } catch (error) {
+    console.error('Failed to decode Base64 string:', error);
+    return '';
+  }
+}

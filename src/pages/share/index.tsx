@@ -158,7 +158,7 @@ function Home() {
         type: data.extension,
         createdAt: data.createdAt,
         href: data.isDirectory
-          ? `/?resourceKey=${data.resourcekey}&id=${data.id}`
+          ? `/home?resourceKey=${data.resourcekey}&id=${data.id}`
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,
@@ -227,7 +227,7 @@ function Home() {
         <div className={styles.taskHeader}>
           <div className={styles.taskTitle}>
             <ul className={styles.path}>
-              <li className={styles.rightArrow}>공유파일</li>
+              <li className={styles.pathText}>공유파일</li>
             </ul>
             <div className={styles.searchInput}>
               <img
@@ -295,7 +295,7 @@ function Home() {
                 key={data.id}
                 type={data.type}
                 name={data.name}
-                isFavorite={true}
+                isFavorite={data.isFavorite}
                 href={data.href}
               />
             ))}

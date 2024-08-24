@@ -6,17 +6,17 @@ import trash from '@/assets/trash.svg';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const sidebarFirstItems = [
-  { title: '모든 파일', href: '/' },
-  { title: '최근', href: '/recent' },
-  { title: '즐겨찾기', href: '/favorite' },
+  { title: '모든 파일', href: '/home' },
+  { title: '최근', href: '/home/recent' },
+  { title: '즐겨찾기', href: '/home/favorite' },
   { title: '공유', href: '/share' },
 ];
 const sidebarSecondItems = [
-  { title: '사진', href: '/image' },
-  { title: '동영상', href: '/video' },
-  { title: '문서', href: '/document' },
-  { title: '음악', href: '/audio' },
-  { title: '암호 폴더', href: '/encrypted' },
+  { title: '사진', href: '/home/image' },
+  { title: '동영상', href: '/home/video' },
+  { title: '문서', href: '/home/document' },
+  { title: '음악', href: '/home/audio' },
+  { title: '암호 폴더', href: '/home/encrypted' },
 ];
 
 function Sidebar() {

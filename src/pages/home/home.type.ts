@@ -11,7 +11,7 @@ export interface ThumbnailData {
 export interface FileData {
   id: number;
   name: string;
-  volume: number;
+  volume: number | null;
   isEncrypted: boolean;
   userId: string;
   isDirectory: boolean;
