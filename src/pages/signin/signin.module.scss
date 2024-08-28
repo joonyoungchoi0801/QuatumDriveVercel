@@ -1,0 +1,110 @@
+.background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: #f0f6ff;
+}
+
+.signinWrapper {
+  margin-bottom: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40rem;
+}
+.titleWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  .logo {
+    width: 12rem;
+    height: 12rem;
+  }
+  .subtitleWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    .subtitle {
+      font-size: 1.6rem;
+      color: #000;
+    }
+    .signupLink {
+      font-size: 1.6rem;
+      color: #6d6afe;
+      cursor: pointer;
+    }
+  }
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  width: 100%;
+  .inputContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    .label {
+      font-size: 1.4rem;
+      color: #000;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+    }
+    .input {
+      width: 100%;
+      padding: 1.6rem 2rem;
+      border-radius: 0.8rem;
+      outline: none;
+      border: 0.1rem solid #e0e0e0;
+    }
+    .input::placeholder {
+      font-size: 1.1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+    .eye {
+      width: 1.6rem;
+      height: 1.6rem;
+      position: absolute;
+      right: 2rem;
+      transform: translateY(252%);
+    }
+    .alert {
+      color: #ff5b56;
+      font-size: 1.2rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  }
+}
+
+.button {
+  display: flex;
+  width: 100%;
+  padding: 1.2rem 2rem;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(91deg, #6d6afe 0.12%, #6ae3fe 101.84%);
+  color: #fff;
+  border: none;
+  border-radius: 0.8rem;
+  font-size: 1.8rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}

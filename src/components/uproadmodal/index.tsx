@@ -28,8 +28,15 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
       setFile(null);
       onClose();
     } catch (error: AxiosError | any) {
-      alert('파일 업로드에 실패했습니다.');
-      console.log(error.response.request.status);
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 409) {
+        alert('이미 존재하는 파일입니다.');
+      } else if (error.response?.status === 418) {
+        alert('용량 초과입니다.');
+      } else {
+        alert('파일 업로드에 실패했습니다');
+      }
     }
   };
 

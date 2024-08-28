@@ -9,7 +9,6 @@ import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
 import { getFile, getKeywordFile } from '@/api/fileAPI';
-import { postLogin } from '@/api/authAPI';
 import { debounce } from 'lodash';
 import Button from '@/components/button';
 import UproadButton from '@/components/uproadbutton';
@@ -111,6 +110,8 @@ function Home() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
+  const accessToken = sessionStorage.getItem('accessToken');
+
   const keyword = searchParams.get('keyword');
   const encodedResourceKey = searchParams.get('resourceKey');
   let resourceKey = encodedResourceKey
@@ -140,7 +141,7 @@ function Home() {
   };
   const onClickPath = (pathIndex: number, pathArray: string[]) => {
     if (pathIndex === 0) {
-      navigate('/');
+      navigate('/home');
       return;
     }
     const clickedPath = pathArray
@@ -151,7 +152,7 @@ function Home() {
 
     const base64Path = utf8_to_b64(normalizedPath);
 
-    navigate(`/?resourceKey=${base64Path}`);
+    navigate(`/home?resourceKey=${base64Path}`);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -188,19 +189,8 @@ function Home() {
       ? { justifyContent: 'flex-end' }
       : { justifyContent: 'space-between' };
 
-  const username = 'joeplay0801@naver.com';
-  const password = 'jyc08010801!';
-
-  postLogin(username, password)
-    .then((response) => {
-      console.log('Login successful:', response.data);
-    })
-    .catch((error) => {
-      console.error('Login failed:', error);
-    });
-
   const fetchMoreData = useCallback(async () => {
-    if (!hasNext) return;
+    if (!hasNext && !accessToken) return;
     const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
     try {
       const fileData = !keyword
@@ -239,10 +229,18 @@ function Home() {
       );
       setHasNext(fileData.data.length === 50);
     } catch (error) {
-      console.log(error);
       alert('데이터를 불러오는데 실패했습니다.');
     }
-  }, [hasNext, keyword, page, resourceKey, sortType, type, methodType]);
+  }, [
+    hasNext,
+    keyword,
+    page,
+    resourceKey,
+    sortType,
+    type,
+    methodType,
+    accessToken,
+  ]);
 
   useEffect(() => {
     if (
@@ -256,7 +254,9 @@ function Home() {
       setPage(0);
       setHasNext(true);
     }
-    fetchMoreData();
+    if (accessToken) {
+      fetchMoreData();
+    }
     prevTypeRef.current = type;
     prevKeywordRef.current = keyword;
     prevResourceKeyRef.current = resourceKey;
@@ -272,6 +272,7 @@ function Home() {
     fetchMoreData,
     isNewFolderModalOpen,
     isUploadModalOpen,
+    accessToken,
   ]);
 
   useEffect(() => {

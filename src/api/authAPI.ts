@@ -1,6 +1,6 @@
 import { API_AUTH } from '@/constants/API';
 
-import instance from './instance';
+import logininstance from './logininstance';
 
 export const postLogin = (username: string, password: string) => {
   const data = new URLSearchParams();
@@ -8,7 +8,7 @@ export const postLogin = (username: string, password: string) => {
   data.append('username', username);
   data.append('password', password);
 
-  return instance({
+  return logininstance({
     method: 'POST',
     url: API_AUTH.LOGIN,
     data,
@@ -16,6 +16,27 @@ export const postLogin = (username: string, password: string) => {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Accept: 'application/json',
+    },
+  });
+};
+
+export const postSignup = (
+  email: string,
+  phonenum: string,
+  username: string,
+  password: string
+) => {
+  return logininstance({
+    method: 'POST',
+    url: API_AUTH.SIGNUP,
+    data: {
+      email,
+      phonenum,
+      username,
+      password,
+    },
+    headers: {
+      accept: 'application/json',
     },
   });
 };

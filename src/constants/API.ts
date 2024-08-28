@@ -9,4 +9,9 @@ export const API_FILE = Object.freeze({
 
 export const API_AUTH = Object.freeze({
   LOGIN: 'auth/login',
+  SIGNUP: 'auth/signup',
+});
+
+export const API_PROFILE = Object.freeze({
+  PROFILE: 'profile/',
 });

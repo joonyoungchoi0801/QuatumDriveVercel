@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './sidebar.module.scss';
 import Menu from './menu';
 import useSidebarStore from '@/store/sidebarStore';
 import trash from '@/assets/trash.svg';
-import { useNavigate, useLocation } from 'react-router-dom';
+import useProfileStore from '@/store/profileStore';
+import bytetogiga from '@/utils/bytetogiga';
 
 const sidebarFirstItems = [
   { title: '모든 파일', href: '/home' },
@@ -23,14 +25,16 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { sidebarWidth, setSidebarWidth } = useSidebarStore();
+  const { usedVolume } = useProfileStore();
+
   const [selectedMenu, setSelectedMenu] = useState('모든 파일');
   const sideBarRef = useRef(false);
 
   const MIN_WIDTH = 180;
   const MAX_WIDTH = 280;
 
-  const TOTAL_CAPACITY = 100;
-  const USED_CAPACITY = 61.5;
+  const TOTAL_CAPACITY = 50;
+  const USED_CAPACITY = bytetogiga(usedVolume);
   const FREE_CAPACITY = TOTAL_CAPACITY - USED_CAPACITY;
   const CAPACITY_PERCENTAGE = (USED_CAPACITY / TOTAL_CAPACITY) * 100;
 
@@ -69,10 +73,6 @@ function Sidebar() {
   const handleTouchEnd = () => {
     sideBarRef.current = false;
   };
-
-  // const handleClickMenu = (menu: string) => {
-  //   setSelectedMenu(menu);
-  // };
 
   const handleClickTrash = () => {
     navigate('./trash');
