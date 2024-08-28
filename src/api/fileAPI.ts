@@ -54,3 +54,43 @@ export const getKeywordFile = (
     },
   });
 };
+
+export const postFileCache = (
+  name: string,
+  resourceKey: string | null,
+  isEncrypted: boolean,
+  isDirectory: boolean,
+  validationToken: string | null
+) => {
+  return instance({
+    method: 'POST',
+    url: API_FILE.CACHE,
+    data: {
+      name,
+      resourceKey,
+      isEncrypted,
+      isDirectory,
+      validationToken,
+    },
+    withCredentials: true,
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const postFileUpload = (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return instance({
+    method: 'POST',
+    url: API_FILE.UPLOAD,
+    data: formData,
+    withCredentials: true,
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};

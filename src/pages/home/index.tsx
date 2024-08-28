@@ -18,6 +18,8 @@ import downarrow from '@/assets/downarrow.svg';
 import info from '@/assets/info.svg';
 import { FileData, ThumbnailData } from './home.type';
 import { utf8_to_b64, b64_to_utf8 } from '@/utils/base64';
+import FolderModal from '@/components/foldermodal';
+import UproadModal from '@/components/uproadmodal';
 
 const sortTypeList = ['날짜', '이름', '용량'];
 const sortTypeApiList: { [key: string]: string } = {
@@ -105,6 +107,8 @@ function Home() {
   const [thumbnailData, setThumbnailData] = useState<ThumbnailData[]>([]);
   const [page, setPage] = useState(0);
   const [hasNext, setHasNext] = useState(true);
+  const [isNewFolderModalOpen, setIsNewFolderModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
   const keyword = searchParams.get('keyword');
@@ -170,6 +174,7 @@ function Home() {
       setIsSortButtonClicked(false);
     }
   };
+
   const gridStyle = isInfoOpen
     ? {
         width: 'calc(100% - 280px)',
@@ -196,8 +201,6 @@ function Home() {
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
-    console.log(resourceKey);
-    console.log(b64_to_utf8(resourceKey as string));
     const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
     try {
       const fileData = !keyword
@@ -259,7 +262,17 @@ function Home() {
     prevResourceKeyRef.current = resourceKey;
     prevSortTypeRef.current = sortType;
     prevMethodTypeRef.current = methodType;
-  }, [type, keyword, resourceKey, sortType, methodType, page, fetchMoreData]);
+  }, [
+    type,
+    keyword,
+    resourceKey,
+    sortType,
+    methodType,
+    page,
+    fetchMoreData,
+    isNewFolderModalOpen,
+    isUploadModalOpen,
+  ]);
 
   useEffect(() => {
     const handleScroll = debounce(() => {
@@ -344,12 +357,32 @@ function Home() {
                 <Button>
                   <input type='checkbox'></input>
                 </Button>
-                <UproadButton />
-                <Button>새 폴더</Button>
+                <UproadButton onClick={() => setIsUploadModalOpen(true)} />
+                <Button onClick={() => setIsNewFolderModalOpen(true)}>
+                  새 폴더
+                </Button>
                 <Button>공유</Button>
                 <Button>파일 유형</Button>
               </div>
             )}
+            <FolderModal
+              isOpen={isNewFolderModalOpen}
+              resourceKey={resourceKey}
+              onClose={() => {
+                setHasNext(true);
+                setIsNewFolderModalOpen(false);
+                fetchMoreData();
+              }}
+            />
+            <UproadModal
+              isOpen={isUploadModalOpen}
+              resourceKey={resourceKey}
+              onClose={() => {
+                setHasNext(true);
+                setIsUploadModalOpen(false);
+                fetchMoreData();
+              }}
+            />
             <div className={styles.sortArea}>
               <button
                 className={styles.sortBtn}
