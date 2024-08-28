@@ -3,7 +3,11 @@
    License: none (public domain)
 */
 
-html,
+html {
+  font-size: 62.5%;
+  font-family: pretendard, 'Noto Sans KR', sans-serif;
+  overflow-y: hidden;
+}
 body,
 div,
 span,

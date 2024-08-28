@@ -1,0 +1,24 @@
+.uproad {
+  display: flex;
+  gap: 0.3rem;
+  background-color: #4078ff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  height: 32px;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 700;
+  vertical-align: top;
+  line-height: normal;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 1.2rem;
+  cursor: pointer;
+  img {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

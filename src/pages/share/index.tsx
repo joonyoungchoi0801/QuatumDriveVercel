@@ -1,24 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
 import Header from '@/components/header';
 import Sidebar from '@/components/sidebar';
-import styles from './home.module.scss';
+import styles from './share.module.scss';
 import useSidebarStore from '@/store/sidebarStore';
 import Thumbnail from '@/components/thumbnail';
 import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
-import { getFile, getKeywordFile } from '@/api/fileAPI';
-import { debounce } from 'lodash';
+import { getFile } from '@/api/fileAPI';
+import { postLogin } from '@/api/authAPI';
 import Button from '@/components/button';
-import UproadButton from '@/components/uproadbutton';
+
 import uparrow from '@/assets/uparrow.svg';
 import downarrow from '@/assets/downarrow.svg';
 import info from '@/assets/info.svg';
-import { FileData, ThumbnailData } from './home.type';
-import { utf8_to_b64, b64_to_utf8 } from '@/utils/base64';
-import FolderModal from '@/components/foldermodal';
-import UproadModal from '@/components/uproadmodal';
+import { FileData, ThumbnailData } from './share.type';
+import { debounce } from 'lodash';
+
+interface SortOptionProps {
+  setSortType: (type: string) => void;
+}
 
 const sortTypeList = ['날짜', '이름', '용량'];
 const sortTypeApiList: { [key: string]: string } = {
@@ -31,31 +32,6 @@ const optionTypeApiList: { [key: string]: boolean } = {
   오름차순: true,
   내림차순: false,
 };
-
-interface SortOptionProps {
-  setSortType: (type: string) => void;
-}
-
-const TypeList: {
-  [key in
-    | 'recent'
-    | 'favorite'
-    | 'image'
-    | 'video'
-    | 'document'
-    | 'audio'
-    | 'encrypted']: string;
-} = {
-  recent: '최근 항목',
-  favorite: '즐겨찾기',
-  image: '사진',
-  video: '동영상',
-  document: '문서',
-  audio: '음악',
-  encrypted: '암호 폴더',
-};
-
-type TypeKey = keyof typeof TypeList;
 
 const SortOption = ({ setSortType }: SortOptionProps) => {
   return (
@@ -95,32 +71,20 @@ const MethodOption = ({ setSortType }: SortOptionProps) => {
 
 function Home() {
   const navigate = useNavigate();
-  const { type } = useParams();
-  const [searchParams] = useSearchParams();
+
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [sortType, setSortType] = useState('날짜');
   const [methodType, setMethodType] = useState('오름차순');
+  const [shareType, setShareType] = useState('share');
   const [isSortButtonClicked, setIsSortButtonClicked] = useState(false);
   const [isMethodButtonClicked, setIsMethodButtonClicked] = useState(false);
   const [thumbnailData, setThumbnailData] = useState<ThumbnailData[]>([]);
   const [page, setPage] = useState(0);
   const [hasNext, setHasNext] = useState(true);
-  const [isNewFolderModalOpen, setIsNewFolderModalOpen] = useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
-  const accessToken = sessionStorage.getItem('accessToken');
-
-  const keyword = searchParams.get('keyword');
-  const encodedResourceKey = searchParams.get('resourceKey');
-  let resourceKey = encodedResourceKey
-    ? decodeURIComponent(encodedResourceKey)
-    : '';
-  resourceKey = resourceKey.replace(/ /g, '+');
-  const prevTypeRef = useRef(type);
-  const prevKeywordRef = useRef(keyword);
-  const prevResourceKeyRef = useRef(resourceKey);
+  const prevShareTypeRef = useRef(shareType);
   const prevSortTypeRef = useRef(sortType);
   const prevMethodTypeRef = useRef(methodType);
   const gridRef = useRef<HTMLDivElement | null>(null);
@@ -130,30 +94,10 @@ function Home() {
     setSearchKeyword(keyword);
   };
 
-  const path = resourceKey
-    ? `QuantumBox${b64_to_utf8(resourceKey as string)}`
-    : 'QuantumBox';
-  const replacedPath = path.replace(/\//g, ' > ');
-  const pathArray = replacedPath.split(' ');
-
   const onClickSearchBtn = (keyword: string) => {
     navigate(`/?keyword=${keyword}`);
   };
-  const onClickPath = (pathIndex: number, pathArray: string[]) => {
-    if (pathIndex === 0) {
-      navigate('/home');
-      return;
-    }
-    const clickedPath = pathArray
-      .slice(1, pathIndex + 1)
-      .join('/')
-      .replace(/>/g, '/');
-    const normalizedPath = clickedPath.replace(/\/{2,}/g, '/');
 
-    const base64Path = utf8_to_b64(normalizedPath);
-
-    navigate(`/home?resourceKey=${base64Path}`);
-  };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       onClickSearchBtn(searchKeyword);
@@ -184,31 +128,29 @@ function Home() {
 
   const sortButtonImg = isSortButtonClicked ? uparrow : downarrow;
   const methodButtonImg = isMethodButtonClicked ? uparrow : downarrow;
-  const taskBtnStyle =
-    type || keyword
-      ? { justifyContent: 'flex-end' }
-      : { justifyContent: 'space-between' };
+
+  const username = 'joeplay0801@naver.com';
+  const password = 'jyc08010801!';
+
+  postLogin(username, password)
+    .then((response) => {
+      console.log('Login successful:', response.data);
+    })
+    .catch((error) => {
+      console.error('Login failed:', error);
+    });
 
   const fetchMoreData = useCallback(async () => {
-    if (!hasNext && !accessToken) return;
-    const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
+    if (!hasNext) return;
     try {
-      const fileData = !keyword
-        ? await getFile(
-            resourceKey,
-            type ? type : null,
-            page * 50,
-            50,
-            sortTypeApiList[sortType],
-            optionTypeApiList[methodType]
-          )
-        : await getKeywordFile(
-            keyword as string,
-            page * 50,
-            50,
-            sortTypeApiList[sortType],
-            optionTypeApiList[methodType]
-          );
+      const fileData = await getFile(
+        null,
+        shareType,
+        page * 50,
+        50,
+        sortTypeApiList[sortType],
+        optionTypeApiList[methodType]
+      );
 
       const transformedData = fileData.data.map((data: FileData) => ({
         id: data.id,
@@ -216,9 +158,7 @@ function Home() {
         type: data.extension,
         createdAt: data.createdAt,
         href: data.isDirectory
-          ? type
-            ? `/home/resourceKey=${data.resourcekey}&id=${data.id}`
-            : `/home?resourceKey=${utf8_to_b64(currentpath + '/' + data.name)}&id=${data.id}`
+          ? `/home?resourceKey=${data.resourcekey}&id=${data.id}`
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,
@@ -231,22 +171,10 @@ function Home() {
     } catch (error) {
       alert('데이터를 불러오는데 실패했습니다.');
     }
-  }, [
-    hasNext,
-    keyword,
-    page,
-    resourceKey,
-    sortType,
-    type,
-    methodType,
-    accessToken,
-  ]);
-
+  }, [hasNext, page, shareType, sortType, methodType]);
   useEffect(() => {
     if (
-      prevTypeRef.current !== type ||
-      prevKeywordRef.current !== keyword ||
-      prevResourceKeyRef.current !== resourceKey ||
+      prevShareTypeRef.current !== shareType ||
       prevSortTypeRef.current !== sortType ||
       prevMethodTypeRef.current !== methodType
     ) {
@@ -254,26 +182,11 @@ function Home() {
       setPage(0);
       setHasNext(true);
     }
-    if (accessToken) {
-      fetchMoreData();
-    }
-    prevTypeRef.current = type;
-    prevKeywordRef.current = keyword;
-    prevResourceKeyRef.current = resourceKey;
+    fetchMoreData();
+    prevShareTypeRef.current = shareType;
     prevSortTypeRef.current = sortType;
     prevMethodTypeRef.current = methodType;
-  }, [
-    type,
-    keyword,
-    resourceKey,
-    sortType,
-    methodType,
-    page,
-    fetchMoreData,
-    isNewFolderModalOpen,
-    isUploadModalOpen,
-    accessToken,
-  ]);
+  }, [shareType, sortType, methodType, page, fetchMoreData]);
 
   useEffect(() => {
     const handleScroll = debounce(() => {
@@ -314,21 +227,7 @@ function Home() {
         <div className={styles.taskHeader}>
           <div className={styles.taskTitle}>
             <ul className={styles.path}>
-              {type ? (
-                <li className={styles.pathText}>{TypeList[type as TypeKey]}</li>
-              ) : (
-                pathArray.map((path, index) => (
-                  <li
-                    key={index}
-                    className={
-                      path === '>' ? styles.rightArrow : styles.pathText
-                    }
-                    onClick={() => onClickPath(index, pathArray)}
-                  >
-                    {path}
-                  </li>
-                ))
-              )}
+              <li className={styles.pathText}>공유파일</li>
             </ul>
             <div className={styles.searchInput}>
               <img
@@ -352,38 +251,12 @@ function Home() {
               </button>
             </div>
           </div>
-          <div className={styles.taskBtn} style={taskBtnStyle}>
-            {!type && !keyword && (
-              <div className={styles.btnArea}>
-                <Button>
-                  <input type='checkbox'></input>
-                </Button>
-                <UproadButton onClick={() => setIsUploadModalOpen(true)} />
-                <Button onClick={() => setIsNewFolderModalOpen(true)}>
-                  새 폴더
-                </Button>
-                <Button>공유</Button>
-                <Button>파일 유형</Button>
-              </div>
-            )}
-            <FolderModal
-              isOpen={isNewFolderModalOpen}
-              resourceKey={resourceKey}
-              onClose={() => {
-                setHasNext(true);
-                setIsNewFolderModalOpen(false);
-                fetchMoreData();
-              }}
-            />
-            <UproadModal
-              isOpen={isUploadModalOpen}
-              resourceKey={resourceKey}
-              onClose={() => {
-                setHasNext(true);
-                setIsUploadModalOpen(false);
-                fetchMoreData();
-              }}
-            />
+          <div className={styles.taskBtn}>
+            <div className={styles.btnArea}>
+              <Button onClick={() => setShareType('share')}>공유 한</Button>
+              <Button onClick={() => setShareType('shared')}>공유 받은</Button>
+            </div>
+
             <div className={styles.sortArea}>
               <button
                 className={styles.sortBtn}
@@ -424,7 +297,6 @@ function Home() {
                 name={data.name}
                 isFavorite={data.isFavorite}
                 href={data.href}
-                image={data?.image}
               />
             ))}
           </div>
