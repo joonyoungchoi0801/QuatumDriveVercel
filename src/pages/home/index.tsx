@@ -189,6 +189,14 @@ function Home() {
       ? { justifyContent: 'flex-end' }
       : { justifyContent: 'space-between' };
 
+  const handleCheckboxClick = (id: number) => {
+    setThumbnailData((prevData) =>
+      prevData.map((item) =>
+        item.id === id ? { ...item, isChecked: !item.isChecked } : item
+      )
+    );
+  };
+
   const fetchMoreData = useCallback(async () => {
     if (!hasNext && !accessToken) return;
     const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
@@ -222,6 +230,7 @@ function Home() {
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,
+        isChecked: false,
       }));
 
       setThumbnailData((prevData) =>
@@ -425,6 +434,8 @@ function Home() {
                 isFavorite={data.isFavorite}
                 href={data.href}
                 image={data?.image}
+                isChecked={data.isChecked ?? false}
+                onClick={() => handleCheckboxClick(data.id)}
               />
             ))}
           </div>

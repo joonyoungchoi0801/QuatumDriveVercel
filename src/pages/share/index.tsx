@@ -129,16 +129,13 @@ function Home() {
   const sortButtonImg = isSortButtonClicked ? uparrow : downarrow;
   const methodButtonImg = isMethodButtonClicked ? uparrow : downarrow;
 
-  const username = 'joeplay0801@naver.com';
-  const password = 'jyc08010801!';
-
-  postLogin(username, password)
-    .then((response) => {
-      console.log('Login successful:', response.data);
-    })
-    .catch((error) => {
-      console.error('Login failed:', error);
-    });
+  const handleCheckboxClick = (id: number) => {
+    setThumbnailData((prevData) =>
+      prevData.map((item) =>
+        item.id === id ? { ...item, isChecked: !item.isChecked } : item
+      )
+    );
+  };
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
@@ -162,6 +159,7 @@ function Home() {
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,
+        isChecked: false,
       }));
 
       setThumbnailData((prevData) =>
@@ -297,6 +295,8 @@ function Home() {
                 name={data.name}
                 isFavorite={data.isFavorite}
                 href={data.href}
+                isChecked={data.isChecked ?? false}
+                onClick={() => handleCheckboxClick(data.id)}
               />
             ))}
           </div>

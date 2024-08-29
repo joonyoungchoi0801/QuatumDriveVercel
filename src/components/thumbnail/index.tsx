@@ -12,7 +12,8 @@ import excel from '@/assets/file/excel.svg';
 import ppt from '@/assets/file/ppt.svg';
 import file from '@/assets/file/file.svg';
 import clickstar from '@/assets/file/clickstar.svg';
-import square from '@/assets/file/square.svg';
+import checkbox from '@/assets/file/checkbox.svg';
+import checkedbox from '@/assets/file/checkedbox.svg';
 import { useNavigate } from 'react-router-dom';
 
 interface ThumbnailProps {
@@ -21,14 +22,25 @@ interface ThumbnailProps {
   image?: string;
   isFavorite: boolean;
   href: string;
+  isChecked: boolean;
+  onClick?: () => void;
 }
 
-function Thumbnail({ type, name, image, isFavorite, href }: ThumbnailProps) {
+function Thumbnail({
+  type,
+  name,
+  image,
+  isFavorite,
+  href,
+  isChecked,
+  onClick,
+}: ThumbnailProps) {
   const [isHover, setIsHover] = useState(false);
   const navigate = useNavigate();
   const handleThumbnailClick = () => {
     navigate(href);
   };
+  const checkboxIcon = isChecked ? checkedbox : checkbox;
 
   const isImg = type === 'png' || type === 'jpg' || type === 'jpeg';
   const isMusic = type === 'mp3' || type === 'wav' || type === 'flac';
@@ -71,7 +83,19 @@ function Thumbnail({ type, name, image, isFavorite, href }: ThumbnailProps) {
         {isFavorite && (
           <img src={clickstar} alt='favorite' className={styles.favorite} />
         )}
-        {/* {isHover && <img src={square} alt='square' className={styles.square} />} */}
+        {(isHover || isChecked) && (
+          <img
+            src={checkboxIcon}
+            alt='checkbox'
+            className={styles.checkbox}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick) {
+                onClick();
+              }
+            }}
+          />
+        )}
       </div>
       <div className={styles.title}>{name}</div>
     </div>
