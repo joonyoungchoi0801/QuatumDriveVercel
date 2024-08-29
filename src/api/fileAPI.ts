@@ -94,3 +94,14 @@ export const postFileUpload = (file: File) => {
     },
   });
 };
+
+export const deleteFile = (contentId: number) => {
+  return instance({
+    method: 'DELETE',
+    url: API_FILE.FILEINFO(contentId),
+    withCredentials: true,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};

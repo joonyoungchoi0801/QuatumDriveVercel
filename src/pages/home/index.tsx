@@ -8,7 +8,7 @@ import Thumbnail from '@/components/thumbnail';
 import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
-import { getFile, getKeywordFile } from '@/api/fileAPI';
+import { deleteFile, getFile, getKeywordFile } from '@/api/fileAPI';
 import { debounce } from 'lodash';
 import Button from '@/components/button';
 import UproadButton from '@/components/uproadbutton';
@@ -19,6 +19,7 @@ import { FileData, ThumbnailData } from './home.type';
 import { utf8_to_b64, b64_to_utf8 } from '@/utils/base64';
 import FolderModal from '@/components/foldermodal';
 import UproadModal from '@/components/uproadmodal';
+import { AxiosError } from 'axios';
 
 const sortTypeList = ['날짜', '이름', '용량'];
 const sortTypeApiList: { [key: string]: string } = {
@@ -108,6 +109,7 @@ function Home() {
   const [hasNext, setHasNext] = useState(true);
   const [isNewFolderModalOpen, setIsNewFolderModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
   const accessToken = sessionStorage.getItem('accessToken');
@@ -135,6 +137,8 @@ function Home() {
     : 'QuantumBox';
   const replacedPath = path.replace(/\//g, ' > ');
   const pathArray = replacedPath.split(' ');
+
+  const isCheckedData = thumbnailData.some((data) => data.isChecked);
 
   const onClickSearchBtn = (keyword: string) => {
     navigate(`/?keyword=${keyword}`);
@@ -184,10 +188,6 @@ function Home() {
 
   const sortButtonImg = isSortButtonClicked ? uparrow : downarrow;
   const methodButtonImg = isMethodButtonClicked ? uparrow : downarrow;
-  const taskBtnStyle =
-    type || keyword
-      ? { justifyContent: 'flex-end' }
-      : { justifyContent: 'space-between' };
 
   const handleCheckboxClick = (id: number) => {
     setThumbnailData((prevData) =>
@@ -197,8 +197,28 @@ function Home() {
     );
   };
 
+  const handleTrashButtonClicked = async () => {
+    const checkedData = thumbnailData.filter((data) => data.isChecked);
+    const checkedIds = checkedData.map((data) => data.id);
+
+    try {
+      checkedIds.forEach(async (id) => {
+        await deleteFile(id);
+      });
+    } catch (error: AxiosError | any) {
+      if (error.response && error.response.status === 404) {
+        alert('요청한 리소스를 찾을 수 없습니다. (404)');
+      } else {
+        alert('에러가 발생했습니다.');
+      }
+    }
+    setThumbnailData((prevData) =>
+      prevData.filter((data) => !checkedIds.includes(data.id))
+    );
+  };
+
   const fetchMoreData = useCallback(async () => {
-    if (!hasNext && !accessToken) return;
+    if (!hasNext) return;
     const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
     try {
       const fileData = !keyword
@@ -240,16 +260,7 @@ function Home() {
     } catch (error) {
       alert('데이터를 불러오는데 실패했습니다.');
     }
-  }, [
-    hasNext,
-    keyword,
-    page,
-    resourceKey,
-    sortType,
-    type,
-    methodType,
-    accessToken,
-  ]);
+  }, [hasNext, keyword, page, resourceKey, sortType, type, methodType]);
 
   useEffect(() => {
     if (
@@ -263,9 +274,9 @@ function Home() {
       setPage(0);
       setHasNext(true);
     }
-    if (accessToken) {
-      fetchMoreData();
-    }
+
+    fetchMoreData();
+
     prevTypeRef.current = type;
     prevKeywordRef.current = keyword;
     prevResourceKeyRef.current = resourceKey;
@@ -308,6 +319,18 @@ function Home() {
       }
     };
   }, [hasNext, page]);
+
+  useEffect(() => {
+    if (isCheckboxChecked) {
+      setThumbnailData((prevData) =>
+        prevData.map((item) => ({ ...item, isChecked: true }))
+      );
+    } else {
+      setThumbnailData((prevData) =>
+        prevData.map((item) => ({ ...item, isChecked: false }))
+      );
+    }
+  }, [isCheckboxChecked]);
 
   return (
     <>
@@ -361,20 +384,32 @@ function Home() {
               </button>
             </div>
           </div>
-          <div className={styles.taskBtn} style={taskBtnStyle}>
-            {!type && !keyword && (
-              <div className={styles.btnArea}>
-                <Button>
-                  <input type='checkbox'></input>
-                </Button>
-                <UproadButton onClick={() => setIsUploadModalOpen(true)} />
-                <Button onClick={() => setIsNewFolderModalOpen(true)}>
-                  새 폴더
-                </Button>
-                <Button>공유</Button>
-                <Button>파일 유형</Button>
-              </div>
-            )}
+          <div className={styles.taskBtn}>
+            <div className={styles.btnArea}>
+              <Button>
+                <input
+                  type='checkbox'
+                  onClick={() => setIsCheckboxChecked(!isCheckboxChecked)}
+                />
+              </Button>
+              {isCheckedData ? (
+                <>
+                  <Button onClick={handleTrashButtonClicked}>선택 삭제</Button>
+                  <Button>선택 공유</Button>
+                </>
+              ) : !type && !keyword ? (
+                <>
+                  <UproadButton onClick={() => setIsUploadModalOpen(true)} />
+                  <Button onClick={() => setIsNewFolderModalOpen(true)}>
+                    새 폴더
+                  </Button>
+                  <Button>공유</Button>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+
             <FolderModal
               isOpen={isNewFolderModalOpen}
               resourceKey={resourceKey}
