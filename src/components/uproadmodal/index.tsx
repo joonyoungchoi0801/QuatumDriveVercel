@@ -8,6 +8,7 @@ import { AxiosError } from 'axios';
 import useProfileStore from '@/store/profileStore';
 import { getProfile } from '@/api/profile';
 import { createSHA256 } from 'hash-wasm';
+import { set } from 'lodash';
 
 function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -38,6 +39,7 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
       const { usedVolume } = res?.data;
       setUsedVolume(usedVolume);
       setUploadProgress(0);
+      setHash('');
     } catch (error: AxiosError | any) {
       if (error instanceof AxiosError && error.response?.status === 401) {
         alert('로그인이 필요합니다.');
@@ -81,12 +83,11 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
     while (!done) {
       const { done: doneReading, value } = await reader.read();
       if (value) {
-        sha256.update(value); // 스트림 데이터를 업데이트
+        sha256.update(value);
       }
       done = doneReading;
     }
 
-    // 해시값 계산
     const hashHex = sha256.digest('hex');
     return hashHex;
   }
