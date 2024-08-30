@@ -140,8 +140,11 @@ function Home() {
   const pathArray = replacedPath.split(' ');
 
   const isCheckedData = thumbnailData.some((data) => data.isChecked);
-  const isAllChecked = thumbnailData.every((data) => data.isChecked);
-
+  const isAllChecked =
+    thumbnailData.length > 0
+      ? thumbnailData.every((data) => data.isChecked)
+      : false;
+  console.log(isAllChecked);
   const onClickSearchBtn = (keyword: string) => {
     navigate(`/?keyword=${keyword}`);
   };
