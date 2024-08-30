@@ -211,7 +211,11 @@ function Home() {
         prevData.filter((data) => !checkedIds.includes(data.id))
       );
     } catch (error: AxiosError | any) {
-      if (error.response && error.response.status === 422) {
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.status === 422
+      ) {
         alert('요청한 리소스를 찾을 수 없습니다.');
       } else {
         alert('에러가 발생했습니다.');

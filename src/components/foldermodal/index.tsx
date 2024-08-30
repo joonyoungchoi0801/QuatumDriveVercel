@@ -24,7 +24,11 @@ function FolderModal({ isOpen, resourceKey, onClose }: FolderModalProps) {
       setFolderName('');
       onClose();
     } catch (error: AxiosError | any) {
-      if (error.response && error.response.request.status === 400) {
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.request.status === 400
+      ) {
         alert('이미 존재하는 폴더 이름입니다.');
       } else {
         alert('폴더 생성에 실패했습니다.');
