@@ -146,7 +146,7 @@ function Home() {
       ? thumbnailData.every((data) => data.isChecked)
       : false;
   const onClickSearchBtn = (keyword: string) => {
-    navigate(`/?keyword=${keyword}`);
+    navigate(`/home?keyword=${keyword}`);
   };
   const onClickPath = (pathIndex: number, pathArray: string[]) => {
     if (pathIndex === 0) {
