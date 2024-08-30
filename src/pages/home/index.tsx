@@ -221,6 +221,9 @@ function Home() {
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
+    if (!accessToken) {
+      navigate('/');
+    }
     const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
     try {
       const fileData = !keyword
@@ -262,7 +265,17 @@ function Home() {
     } catch (error) {
       alert('데이터를 불러오는데 실패했습니다.');
     }
-  }, [hasNext, keyword, page, resourceKey, sortType, type, methodType]);
+  }, [
+    hasNext,
+    keyword,
+    page,
+    resourceKey,
+    sortType,
+    type,
+    methodType,
+    accessToken,
+    navigate,
+  ]);
 
   useEffect(() => {
     if (

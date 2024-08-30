@@ -87,6 +87,8 @@ function Home() {
   const prevMethodTypeRef = useRef(methodType);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
+  const accessToken = sessionStorage.getItem('accessToken');
+
   const setKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
     setSearchKeyword(keyword);
@@ -137,6 +139,9 @@ function Home() {
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
+    if (!accessToken) {
+      navigate('/');
+    }
     try {
       const fileData = await getFile(
         null,
@@ -167,7 +172,7 @@ function Home() {
     } catch (error) {
       alert('데이터를 불러오는데 실패했습니다.');
     }
-  }, [hasNext, page, shareType, sortType, methodType]);
+  }, [hasNext, page, shareType, sortType, methodType, accessToken, navigate]);
   useEffect(() => {
     if (
       prevShareTypeRef.current !== shareType ||
