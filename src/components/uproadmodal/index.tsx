@@ -101,9 +101,9 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
           <div className={styles.progressWrapper}>
             <div
               className={styles.progressBar}
-              style={{ width: `${uploadProgress > 80 ? 80 : uploadProgress}%` }}
+              style={{ width: `${uploadProgress}%` }}
             />
-            <span>{uploadProgress > 80 ? 80 : uploadProgress}%</span>
+            <span>{uploadProgress}%</span>
           </div>
         )}
         <div className={styles.btnArea}>
