@@ -114,7 +114,7 @@ function Home() {
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
   const modalRoot = document.getElementById('modal-root') as HTMLElement;
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const keyword = searchParams.get('keyword');
   const encodedResourceKey = searchParams.get('resourceKey');

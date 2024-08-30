@@ -21,3 +21,7 @@ export const API_TRASH = Object.freeze({
   TRASH: 'trashbin/',
   TRASHBIN: (contentId: number) => `trashbin/${contentId}`,
 });
+
+export const API_DEFAULT = Object.freeze({
+  TOKEN: 'token',
+});

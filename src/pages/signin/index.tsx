@@ -8,10 +8,25 @@ import { useForm } from 'react-hook-form';
 import { postLogin } from '@/api/authAPI';
 import { LoginData } from './signin.type';
 import { useNavigate } from 'react-router-dom';
+import { getToken } from '@/api/tokenAPI';
 
 function Home() {
   const navigate = useNavigate();
 
+  const accessToken = localStorage.getItem('accessToken');
+  if (accessToken) {
+    const handleLogin = async () => {
+      try {
+        const res = await getToken();
+        const { access_token } = res.data;
+        localStorage.setItem('accessToken', access_token);
+        navigate('/home');
+      } catch (error) {
+        localStorage.removeItem('accessToken');
+      }
+    };
+    handleLogin();
+  }
   const {
     register,
     handleSubmit,
@@ -30,7 +45,7 @@ function Home() {
     try {
       const res = await postLogin(data.email, data.password);
       const { access_token } = res.data;
-      sessionStorage.setItem('accessToken', access_token);
+      localStorage.setItem('accessToken', access_token);
       navigate('/home');
     } catch (error) {
       alert('로그인에 실패했습니다.');

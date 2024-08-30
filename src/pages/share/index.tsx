@@ -87,7 +87,7 @@ function Home() {
   const prevMethodTypeRef = useRef(methodType);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const setKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;

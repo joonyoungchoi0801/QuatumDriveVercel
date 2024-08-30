@@ -5,7 +5,6 @@ export const getTrash = () => {
   return instance({
     method: 'GET',
     url: API_TRASH.TRASH,
-    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -17,7 +16,6 @@ export const postTrash = (deleteArray: number[]) => {
   return instance({
     method: 'POST',
     url: API_TRASH.TRASH,
-    withCredentials: true,
     data: trashData,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

@@ -51,7 +51,7 @@ function Home() {
         data.password
       );
       const { access_token } = res.data;
-      sessionStorage.setItem('accessToken', access_token);
+      localStorage.setItem('accessToken', access_token);
       navigate('/home');
     } catch (error: AxiosError | any) {
       if (error.response && error.response.request.status === 403) {

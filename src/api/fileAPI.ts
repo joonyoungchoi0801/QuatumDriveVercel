@@ -23,7 +23,6 @@ export const getFile = (
     method: 'GET',
     url: API_FILE.FILE,
     params,
-    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -48,7 +47,6 @@ export const getKeywordFile = (
     method: 'GET',
     url: API_FILE.KEYWORD,
     params,
-    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -72,7 +70,6 @@ export const postFileCache = (
       isDirectory,
       validationToken,
     },
-    withCredentials: true,
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json',
@@ -90,7 +87,6 @@ export const postFileUpload = (
     method: 'POST',
     url: API_FILE.UPLOAD,
     data: formData,
-    withCredentials: true,
     headers: {
       accept: 'application/json',
       'Content-Type': 'multipart/form-data',
@@ -108,7 +104,6 @@ export const deleteFile = (contentId: number) => {
   return instance({
     method: 'DELETE',
     url: API_FILE.FILEINFO(contentId),
-    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },
