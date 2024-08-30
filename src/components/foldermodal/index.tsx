@@ -29,8 +29,6 @@ function FolderModal({ isOpen, resourceKey, onClose }: FolderModalProps) {
       } else {
         alert('폴더 생성에 실패했습니다.');
       }
-
-      console.log(error.response.request.status);
     }
   };
 

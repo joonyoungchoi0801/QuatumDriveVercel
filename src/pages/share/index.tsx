@@ -80,15 +80,12 @@ function Home() {
   const [thumbnailData, setThumbnailData] = useState<ThumbnailData[]>([]);
   const [page, setPage] = useState(0);
   const [hasNext, setHasNext] = useState(true);
-  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
   const prevShareTypeRef = useRef(shareType);
   const prevSortTypeRef = useRef(sortType);
   const prevMethodTypeRef = useRef(methodType);
   const gridRef = useRef<HTMLDivElement | null>(null);
-
-  const isCheckedData = thumbnailData.some((data) => data.isChecked);
 
   const setKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
@@ -211,17 +208,6 @@ function Home() {
       }
     };
   }, [hasNext, page]);
-  useEffect(() => {
-    if (isCheckboxChecked) {
-      setThumbnailData((prevData) =>
-        prevData.map((item) => ({ ...item, isChecked: true }))
-      );
-    } else {
-      setThumbnailData((prevData) =>
-        prevData.map((item) => ({ ...item, isChecked: false }))
-      );
-    }
-  }, [isCheckboxChecked]);
 
   return (
     <>
@@ -263,25 +249,8 @@ function Home() {
           </div>
           <div className={styles.taskBtn}>
             <div className={styles.btnArea}>
-              <Button>
-                <input
-                  type='checkbox'
-                  onClick={() => setIsCheckboxChecked(!isCheckboxChecked)}
-                />
-              </Button>
-              {isCheckedData ? (
-                <>
-                  <Button>선택 삭제</Button>
-                  <Button>선택 공유</Button>
-                </>
-              ) : (
-                <>
-                  <Button onClick={() => setShareType('share')}>공유 한</Button>
-                  <Button onClick={() => setShareType('shared')}>
-                    공유 받은
-                  </Button>
-                </>
-              )}
+              <Button onClick={() => setShareType('share')}>공유 한</Button>
+              <Button onClick={() => setShareType('shared')}>공유 받은</Button>
             </div>
 
             <div className={styles.sortArea}>

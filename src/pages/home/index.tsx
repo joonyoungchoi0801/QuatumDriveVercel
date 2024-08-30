@@ -8,7 +8,7 @@ import Thumbnail from '@/components/thumbnail';
 import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
-import { deleteFile, getFile, getKeywordFile } from '@/api/fileAPI';
+import { getFile, getKeywordFile } from '@/api/fileAPI';
 import { debounce } from 'lodash';
 import Button from '@/components/button';
 import UproadButton from '@/components/uproadbutton';
@@ -20,6 +20,7 @@ import { utf8_to_b64, b64_to_utf8 } from '@/utils/base64';
 import FolderModal from '@/components/foldermodal';
 import UproadModal from '@/components/uproadmodal';
 import { AxiosError } from 'axios';
+import { postTrash } from '@/api/trashAPI';
 
 const sortTypeList = ['날짜', '이름', '용량'];
 const sortTypeApiList: { [key: string]: string } = {
@@ -139,6 +140,7 @@ function Home() {
   const pathArray = replacedPath.split(' ');
 
   const isCheckedData = thumbnailData.some((data) => data.isChecked);
+  const isAllChecked = thumbnailData.every((data) => data.isChecked);
 
   const onClickSearchBtn = (keyword: string) => {
     navigate(`/?keyword=${keyword}`);
@@ -200,21 +202,18 @@ function Home() {
   const handleTrashButtonClicked = async () => {
     const checkedData = thumbnailData.filter((data) => data.isChecked);
     const checkedIds = checkedData.map((data) => data.id);
-
     try {
-      checkedIds.forEach(async (id) => {
-        await deleteFile(id);
-      });
+      await postTrash(checkedIds);
+      setThumbnailData((prevData) =>
+        prevData.filter((data) => !checkedIds.includes(data.id))
+      );
     } catch (error: AxiosError | any) {
-      if (error.response && error.response.status === 404) {
-        alert('요청한 리소스를 찾을 수 없습니다. (404)');
+      if (error.response && error.response.status === 422) {
+        alert('요청한 리소스를 찾을 수 없습니다.');
       } else {
         alert('에러가 발생했습니다.');
       }
     }
-    setThumbnailData((prevData) =>
-      prevData.filter((data) => !checkedIds.includes(data.id))
-    );
   };
 
   const fetchMoreData = useCallback(async () => {
@@ -389,7 +388,8 @@ function Home() {
               <Button>
                 <input
                   type='checkbox'
-                  onClick={() => setIsCheckboxChecked(!isCheckboxChecked)}
+                  checked={isAllChecked ?? false}
+                  onChange={() => setIsCheckboxChecked(!isCheckboxChecked)}
                 />
               </Button>
               {isCheckedData ? (

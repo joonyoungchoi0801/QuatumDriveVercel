@@ -12,13 +12,15 @@ export const getTrash = () => {
   });
 };
 
-export const postTrash = (contentId: number) => {
+export const postTrash = (deleteArray: number[]) => {
+  const trashData = `lContentID=[${deleteArray.join(',')}]`;
   return instance({
     method: 'POST',
-    url: API_TRASH.TRASHBIN(contentId),
+    url: API_TRASH.TRASH,
     withCredentials: true,
+    data: trashData,
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
   });
 };
