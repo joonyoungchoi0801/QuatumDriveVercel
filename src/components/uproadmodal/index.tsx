@@ -7,6 +7,7 @@ import { postFileCache, postFileUpload } from '@/api/fileAPI';
 import { AxiosError } from 'axios';
 import useProfileStore from '@/store/profileStore';
 import { getProfile } from '@/api/profile';
+import { createSHA256 } from 'hash-wasm';
 
 function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -65,20 +66,40 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
     if (selectedFile) {
       setFile(selectedFile);
       setFileName(selectedFile.name);
-      const hash = await calculateSHA256(selectedFile);
+      // const hash = await calculateSHA256(selectedFile);
+      const hash = await calculateSHA256Stream(selectedFile);
       setHash(hash);
     }
   };
 
-  const calculateSHA256 = async (file: File): Promise<string> => {
-    const arrayBuffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('');
+  async function calculateSHA256Stream(file: File): Promise<string> {
+    const reader = file.stream().getReader();
+    const sha256 = await createSHA256();
+
+    let done = false;
+
+    while (!done) {
+      const { done: doneReading, value } = await reader.read();
+      if (value) {
+        sha256.update(value); // 스트림 데이터를 업데이트
+      }
+      done = doneReading;
+    }
+
+    // 해시값 계산
+    const hashHex = sha256.digest('hex');
     return hashHex;
-  };
+  }
+
+  // const calculateSHA256 = async (file: File): Promise<string> => {
+  //   const arrayBuffer = await file.arrayBuffer();
+  //   const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+  //   const hashArray = Array.from(new Uint8Array(hashBuffer));
+  //   const hashHex = hashArray
+  //     .map((byte) => byte.toString(16).padStart(2, '0'))
+  //     .join('');
+  //   return hashHex;
+  // };
 
   return ReactDOM.createPortal(
     <div className={styles.folderModal}>
