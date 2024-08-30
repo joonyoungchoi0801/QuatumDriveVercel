@@ -11,6 +11,8 @@ interface ProfileStore {
   setEmail: (email: string) => void;
   usedVolume: number;
   setUsedVolume: (usedVolume: number) => void;
+  maxVolume: number;
+  setMaxVolume: (maxVolume: number) => void;
 }
 
 const useProfileStore = create<ProfileStore>((set) => ({
@@ -24,6 +26,8 @@ const useProfileStore = create<ProfileStore>((set) => ({
   setEmail: (email) => set({ email }),
   usedVolume: 0,
   setUsedVolume: (usedVolume) => set({ usedVolume }),
+  maxVolume: 0,
+  setMaxVolume: (maxVolume) => set({ maxVolume }),
 }));
 
 export default useProfileStore;

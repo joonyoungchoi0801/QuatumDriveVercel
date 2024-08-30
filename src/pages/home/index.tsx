@@ -113,6 +113,7 @@ function Home() {
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const sidebarWidth = useSidebarStore((state) => state.sidebarWidth);
 
+  const modalRoot = document.getElementById('modal-root') as HTMLElement;
   const accessToken = sessionStorage.getItem('accessToken');
 
   const keyword = searchParams.get('keyword');
@@ -144,7 +145,6 @@ function Home() {
     thumbnailData.length > 0
       ? thumbnailData.every((data) => data.isChecked)
       : false;
-  console.log(isAllChecked);
   const onClickSearchBtn = (keyword: string) => {
     navigate(`/?keyword=${keyword}`);
   };
@@ -446,6 +446,7 @@ function Home() {
                 setHasNext(true);
                 setIsUploadModalOpen(false);
                 fetchMoreData();
+                modalRoot.classList.remove('active');
               }}
             />
             <div className={styles.sortArea}>

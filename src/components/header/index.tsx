@@ -16,23 +16,38 @@ function Header() {
     email,
     setEmail,
     setUsedVolume,
+    setMaxVolume,
   } = useProfileStore();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await getProfile();
-        const { phonenum, username, profilePath, email, usedVolume } =
-          res?.data;
+        const {
+          phonenum,
+          username,
+          profilePath,
+          email,
+          usedVolume,
+          maxVolume,
+        } = res?.data;
         setPhonenum(phonenum);
         setUsername(username);
         setProfilePath(profilePath);
         setEmail(email);
         setUsedVolume(usedVolume);
+        setMaxVolume(maxVolume);
       } catch (error) {}
     };
     fetchProfile();
-  }, [setEmail, setPhonenum, setProfilePath, setUsername, setUsedVolume]);
+  }, [
+    setEmail,
+    setPhonenum,
+    setProfilePath,
+    setUsername,
+    setUsedVolume,
+    setMaxVolume,
+  ]);
 
   return (
     <header className={styles.header}>

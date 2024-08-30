@@ -80,7 +80,10 @@ export const postFileCache = (
   });
 };
 
-export const postFileUpload = (file: File) => {
+export const postFileUpload = (
+  file: File,
+  onProgress: (progress: number) => void
+) => {
   const formData = new FormData();
   formData.append('file', file);
   return instance({
@@ -91,6 +94,12 @@ export const postFileUpload = (file: File) => {
     headers: {
       accept: 'application/json',
       'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress: (event) => {
+      if (event.total) {
+        const percentCompleted = Math.round((event.loaded * 100) / event.total);
+        onProgress(percentCompleted);
+      }
     },
   });
 };
