@@ -14,6 +14,7 @@ import file from '@/assets/file/file.svg';
 import clickstar from '@/assets/file/clickstar.svg';
 import checkbox from '@/assets/file/checkbox.svg';
 import checkedbox from '@/assets/file/checkedbox.svg';
+import hwp from '@/assets/file/hwp.svg';
 import { useNavigate } from 'react-router-dom';
 
 interface ThumbnailProps {
@@ -45,6 +46,11 @@ function Thumbnail({
   const isImg = type === 'png' || type === 'jpg' || type === 'jpeg';
   const isMusic = type === 'mp3' || type === 'wav' || type === 'flac';
   const isVideo = type === 'mp4' || type === 'avi' || type === 'wmv';
+  const isWord = type === 'doc' || type === 'docx';
+  const isHwp = type === 'hwp';
+  const isPpt = type === 'ppt' || type === 'pptx';
+  const isExcel =
+    type === 'xls' || type === 'xlsx' || type === 'csv' || type === 'cell';
 
   let thumb;
   if (image) {
@@ -59,14 +65,16 @@ function Thumbnail({
     thumb = pdf;
   } else if (isVideo) {
     thumb = video;
-  } else if (type === 'word') {
+  } else if (isWord) {
     thumb = word;
   } else if (type === 'zip') {
     thumb = zip;
-  } else if (type === 'excel') {
+  } else if (isExcel) {
     thumb = excel;
-  } else if (type === 'ppt') {
+  } else if (isPpt) {
     thumb = ppt;
+  } else if (isHwp) {
+    thumb = hwp;
   } else {
     thumb = file;
   }
