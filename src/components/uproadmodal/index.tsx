@@ -8,13 +8,13 @@ import { AxiosError } from 'axios';
 import useProfileStore from '@/store/profileStore';
 import { getProfile } from '@/api/profile';
 import { createSHA256 } from 'hash-wasm';
-import { set } from 'lodash';
 
 function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
   const [hash, setHash] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isCalculatingHash, setIsCalculatingHash] = useState(false);
 
   const { setUsedVolume } = useProfileStore();
 
@@ -22,6 +22,10 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
   const modalRoot = document.getElementById('modal-root') as HTMLElement;
 
   modalRoot.classList.add('active');
+
+  const confirmBtnClass = isCalculatingHash
+    ? `${styles.button} ${styles.disabled}`
+    : `${styles.button}`;
 
   const handleUproadFile = async () => {
     if (!file) {
@@ -35,11 +39,11 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
       setFileName('');
       setFile(null);
       onClose();
+      setHash('');
+      setUploadProgress(0);
       const res = await getProfile();
       const { usedVolume } = res?.data;
       setUsedVolume(usedVolume);
-      setUploadProgress(0);
-      setHash('');
     } catch (error: AxiosError | any) {
       if (error instanceof AxiosError && error.response?.status === 401) {
         alert('로그인이 필요합니다.');
@@ -50,12 +54,6 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
       } else {
         alert('파일 업로드에 실패했습니다');
       }
-    } finally {
-      if (modalRoot) {
-        modalRoot.classList.remove('active');
-      } else {
-        console.error('modalRoot is null in finally block.');
-      }
     }
   };
 
@@ -65,12 +63,15 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
   };
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] as File;
+    setHash('');
     if (selectedFile) {
       setFile(selectedFile);
       setFileName(selectedFile.name);
+      setIsCalculatingHash(true);
       // const hash = await calculateSHA256(selectedFile);
       const hash = await calculateSHA256Stream(selectedFile);
       setHash(hash);
+      setIsCalculatingHash(false);
     }
   };
 
@@ -129,7 +130,11 @@ function UproadModal({ isOpen, resourceKey, onClose }: UploadModalProps) {
           </div>
         )}
         <div className={styles.btnArea}>
-          <button className={styles.button} onClick={handleUproadFile}>
+          <button
+            className={confirmBtnClass}
+            onClick={handleUproadFile}
+            disabled={!file || isCalculatingHash}
+          >
             확인
           </button>
           <button

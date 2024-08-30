@@ -74,6 +74,10 @@
     border-radius: 0.4rem;
     background-color: #fff;
   }
+  .disabled {
+    background-color: #ebebeb;
+    cursor: not-allowed;
+  }
   .last {
     margin-left: 1rem;
   }
