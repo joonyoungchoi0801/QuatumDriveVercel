@@ -9,7 +9,7 @@ import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
 import { getFile, getKeywordFile } from '@/api/fileAPI';
-import { debounce } from 'lodash';
+import { debounce, set } from 'lodash';
 import Button from '@/components/button';
 import UproadButton from '@/components/uproadbutton';
 import uparrow from '@/assets/uparrow.svg';
@@ -21,6 +21,7 @@ import FolderModal from '@/components/foldermodal';
 import UproadModal from '@/components/uproadmodal';
 import { AxiosError } from 'axios';
 import { postTrash } from '@/api/trashAPI';
+import { getToken } from '@/api/tokenAPI';
 
 const sortTypeList = ['날짜', '이름', '용량'];
 const sortTypeApiList: { [key: string]: string } = {
@@ -99,6 +100,7 @@ function Home() {
   const navigate = useNavigate();
   const { type } = useParams();
   const [searchParams] = useSearchParams();
+  const [isLogin, setIsLogin] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [sortType, setSortType] = useState('날짜');
@@ -228,6 +230,22 @@ function Home() {
     if (!accessToken) {
       navigate('/');
     }
+    if (accessToken) {
+      const handleLogin = async () => {
+        try {
+          const res = await getToken();
+          const { access_token } = res.data;
+          localStorage.setItem('accessToken', access_token);
+          setIsLogin(true);
+        } catch (error) {
+          localStorage.removeItem('accessToken');
+          navigate('/');
+          return;
+        }
+      };
+      handleLogin();
+    }
+
     const currentpath = resourceKey ? `${b64_to_utf8(resourceKey)}` : '';
     try {
       const fileData = !keyword
@@ -267,7 +285,9 @@ function Home() {
       );
       setHasNext(fileData.data.length === 50);
     } catch (error) {
-      alert('데이터를 불러오는데 실패했습니다.');
+      if (isLogin) {
+        alert('데이터를 불러오는데 실패했습니다.');
+      }
     }
   }, [
     hasNext,
@@ -279,6 +299,7 @@ function Home() {
     methodType,
     accessToken,
     navigate,
+    isLogin,
   ]);
 
   useEffect(() => {

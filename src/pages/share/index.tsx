@@ -14,6 +14,7 @@ import downarrow from '@/assets/downarrow.svg';
 import info from '@/assets/info.svg';
 import { FileData, ThumbnailData } from './share.type';
 import { debounce } from 'lodash';
+import { getToken } from '@/api/tokenAPI';
 
 interface SortOptionProps {
   setSortType: (type: string) => void;
@@ -69,7 +70,7 @@ const MethodOption = ({ setSortType }: SortOptionProps) => {
 
 function Home() {
   const navigate = useNavigate();
-
+  const [isLogin, setIsLogin] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [sortType, setSortType] = useState('날짜');
@@ -142,6 +143,21 @@ function Home() {
     if (!accessToken) {
       navigate('/');
     }
+    if (accessToken) {
+      const handleLogin = async () => {
+        try {
+          const res = await getToken();
+          const { access_token } = res.data;
+          localStorage.setItem('accessToken', access_token);
+          setIsLogin(true);
+        } catch (error) {
+          localStorage.removeItem('accessToken');
+          navigate('/');
+          return;
+        }
+      };
+      handleLogin();
+    }
     try {
       const fileData = await getFile(
         null,
@@ -170,9 +186,20 @@ function Home() {
       );
       setHasNext(fileData.data.length === 50);
     } catch (error) {
-      alert('데이터를 불러오는데 실패했습니다.');
+      if (isLogin) {
+        alert('데이터를 불러오는데 실패했습니다.');
+      }
     }
-  }, [hasNext, page, shareType, sortType, methodType, accessToken, navigate]);
+  }, [
+    hasNext,
+    page,
+    shareType,
+    sortType,
+    methodType,
+    accessToken,
+    navigate,
+    isLogin,
+  ]);
   useEffect(() => {
     if (
       prevShareTypeRef.current !== shareType ||
