@@ -12,7 +12,9 @@ import excel from '@/assets/file/excel.svg';
 import ppt from '@/assets/file/ppt.svg';
 import file from '@/assets/file/file.svg';
 import clickstar from '@/assets/file/clickstar.svg';
-import square from '@/assets/file/square.svg';
+import checkbox from '@/assets/file/checkbox.svg';
+import checkedbox from '@/assets/file/checkedbox.svg';
+import hwp from '@/assets/file/hwp.svg';
 import { useNavigate } from 'react-router-dom';
 
 interface ThumbnailProps {
@@ -21,18 +23,34 @@ interface ThumbnailProps {
   image?: string;
   isFavorite: boolean;
   href: string;
+  isChecked: boolean;
+  onClick?: () => void;
 }
 
-function Thumbnail({ type, name, image, isFavorite, href }: ThumbnailProps) {
+function Thumbnail({
+  type,
+  name,
+  image,
+  isFavorite,
+  href,
+  isChecked,
+  onClick,
+}: ThumbnailProps) {
   const [isHover, setIsHover] = useState(false);
   const navigate = useNavigate();
   const handleThumbnailClick = () => {
     navigate(href);
   };
+  const checkboxIcon = isChecked ? checkedbox : checkbox;
 
   const isImg = type === 'png' || type === 'jpg' || type === 'jpeg';
   const isMusic = type === 'mp3' || type === 'wav' || type === 'flac';
   const isVideo = type === 'mp4' || type === 'avi' || type === 'wmv';
+  const isWord = type === 'doc' || type === 'docx';
+  const isHwp = type === 'hwp';
+  const isPpt = type === 'ppt' || type === 'pptx';
+  const isExcel =
+    type === 'xls' || type === 'xlsx' || type === 'csv' || type === 'cell';
 
   let thumb;
   if (image) {
@@ -47,14 +65,16 @@ function Thumbnail({ type, name, image, isFavorite, href }: ThumbnailProps) {
     thumb = pdf;
   } else if (isVideo) {
     thumb = video;
-  } else if (type === 'word') {
+  } else if (isWord) {
     thumb = word;
   } else if (type === 'zip') {
     thumb = zip;
-  } else if (type === 'excel') {
+  } else if (isExcel) {
     thumb = excel;
-  } else if (type === 'ppt') {
+  } else if (isPpt) {
     thumb = ppt;
+  } else if (isHwp) {
+    thumb = hwp;
   } else {
     thumb = file;
   }
@@ -71,7 +91,19 @@ function Thumbnail({ type, name, image, isFavorite, href }: ThumbnailProps) {
         {isFavorite && (
           <img src={clickstar} alt='favorite' className={styles.favorite} />
         )}
-        {/* {isHover && <img src={square} alt='square' className={styles.square} />} */}
+        {(isHover || isChecked) && (
+          <img
+            src={checkboxIcon}
+            alt='checkbox'
+            className={styles.checkbox}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick) {
+                onClick();
+              }
+            }}
+          />
+        )}
       </div>
       <div className={styles.title}>{name}</div>
     </div>

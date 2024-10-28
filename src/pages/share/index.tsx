@@ -8,14 +8,13 @@ import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
 import { getFile } from '@/api/fileAPI';
-import { postLogin } from '@/api/authAPI';
 import Button from '@/components/button';
-
 import uparrow from '@/assets/uparrow.svg';
 import downarrow from '@/assets/downarrow.svg';
 import info from '@/assets/info.svg';
 import { FileData, ThumbnailData } from './share.type';
 import { debounce } from 'lodash';
+import { getToken } from '@/api/tokenAPI';
 
 interface SortOptionProps {
   setSortType: (type: string) => void;
@@ -71,7 +70,7 @@ const MethodOption = ({ setSortType }: SortOptionProps) => {
 
 function Home() {
   const navigate = useNavigate();
-
+  const [isLogin, setIsLogin] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [sortType, setSortType] = useState('날짜');
@@ -88,6 +87,8 @@ function Home() {
   const prevSortTypeRef = useRef(sortType);
   const prevMethodTypeRef = useRef(methodType);
   const gridRef = useRef<HTMLDivElement | null>(null);
+
+  const accessToken = localStorage.getItem('accessToken');
 
   const setKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
@@ -129,19 +130,34 @@ function Home() {
   const sortButtonImg = isSortButtonClicked ? uparrow : downarrow;
   const methodButtonImg = isMethodButtonClicked ? uparrow : downarrow;
 
-  const username = 'joeplay0801@naver.com';
-  const password = 'jyc08010801!';
-
-  postLogin(username, password)
-    .then((response) => {
-      console.log('Login successful:', response.data);
-    })
-    .catch((error) => {
-      console.error('Login failed:', error);
-    });
+  const handleCheckboxClick = (id: number) => {
+    setThumbnailData((prevData) =>
+      prevData.map((item) =>
+        item.id === id ? { ...item, isChecked: !item.isChecked } : item
+      )
+    );
+  };
 
   const fetchMoreData = useCallback(async () => {
     if (!hasNext) return;
+    if (!accessToken) {
+      navigate('/');
+    }
+    if (accessToken) {
+      const handleLogin = async () => {
+        try {
+          const res = await getToken();
+          const { access_token } = res.data;
+          localStorage.setItem('accessToken', access_token);
+          setIsLogin(true);
+        } catch (error) {
+          localStorage.removeItem('accessToken');
+          navigate('/');
+          return;
+        }
+      };
+      handleLogin();
+    }
     try {
       const fileData = await getFile(
         null,
@@ -162,6 +178,7 @@ function Home() {
           : `/download/${data.id}`,
         isFavorite: data.isFavorite,
         image: data.thumbnail,
+        isChecked: false,
       }));
 
       setThumbnailData((prevData) =>
@@ -169,9 +186,20 @@ function Home() {
       );
       setHasNext(fileData.data.length === 50);
     } catch (error) {
-      alert('데이터를 불러오는데 실패했습니다.');
+      if (isLogin) {
+        alert('데이터를 불러오는데 실패했습니다.');
+      }
     }
-  }, [hasNext, page, shareType, sortType, methodType]);
+  }, [
+    hasNext,
+    page,
+    shareType,
+    sortType,
+    methodType,
+    accessToken,
+    navigate,
+    isLogin,
+  ]);
   useEffect(() => {
     if (
       prevShareTypeRef.current !== shareType ||
@@ -297,6 +325,8 @@ function Home() {
                 name={data.name}
                 isFavorite={data.isFavorite}
                 href={data.href}
+                isChecked={data.isChecked ?? false}
+                onClick={() => handleCheckboxClick(data.id)}
               />
             ))}
           </div>

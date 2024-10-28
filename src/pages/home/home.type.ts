@@ -6,6 +6,7 @@ export interface ThumbnailData {
   isFavorite: boolean;
   type: string | null;
   image?: string;
+  isChecked?: boolean;
 }
 
 export interface FileData {

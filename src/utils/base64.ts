@@ -11,7 +11,6 @@ export function b64_to_utf8(str: string) {
     const byteArray = base64js.toByteArray(str);
     return new TextDecoder('utf-8').decode(byteArray);
   } catch (error) {
-    console.error('Failed to decode Base64 string:', error);
     return '';
   }
 }

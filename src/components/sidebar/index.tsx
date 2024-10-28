@@ -25,7 +25,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { sidebarWidth, setSidebarWidth } = useSidebarStore();
-  const { usedVolume } = useProfileStore();
+  const { usedVolume, maxVolume } = useProfileStore();
 
   const [selectedMenu, setSelectedMenu] = useState('모든 파일');
   const sideBarRef = useRef(false);
@@ -33,7 +33,7 @@ function Sidebar() {
   const MIN_WIDTH = 180;
   const MAX_WIDTH = 280;
 
-  const TOTAL_CAPACITY = 50;
+  const TOTAL_CAPACITY = maxVolume ? bytetogiga(maxVolume) : 50;
   const USED_CAPACITY = bytetogiga(usedVolume);
   const FREE_CAPACITY = TOTAL_CAPACITY - USED_CAPACITY;
   const CAPACITY_PERCENTAGE = (USED_CAPACITY / TOTAL_CAPACITY) * 100;
