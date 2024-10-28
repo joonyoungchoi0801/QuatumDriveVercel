@@ -9,7 +9,7 @@ import filesearch from '@/assets/filesearch.svg';
 import search from '@/assets/search.svg';
 import { useNavigate } from 'react-router-dom';
 import { getFile, getKeywordFile } from '@/api/fileAPI';
-import { debounce, set } from 'lodash';
+import { debounce } from 'lodash';
 import Button from '@/components/button';
 import UproadButton from '@/components/uproadbutton';
 import uparrow from '@/assets/uparrow.svg';

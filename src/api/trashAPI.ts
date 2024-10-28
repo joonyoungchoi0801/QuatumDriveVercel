@@ -22,3 +22,33 @@ export const postTrash = (deleteArray: number[]) => {
     },
   });
 };
+
+export const putTrash = (restoreId: number) => {
+  return instance({
+    method: 'PUT',
+    url: API_TRASH.TRASHBIN(restoreId),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const deleteTrash = (deleteId: number) => {
+  return instance({
+    method: 'DELETE',
+    url: API_TRASH.TRASHBIN(deleteId),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const deleteAllTrash = () => {
+  return instance({
+    method: 'DELETE',
+    url: API_TRASH.TRASH,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};

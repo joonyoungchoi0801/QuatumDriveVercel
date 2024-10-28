@@ -40,3 +40,10 @@ export const postSignup = (
     },
   });
 };
+
+export const deleteLogout = () => {
+  return logininstance({
+    method: 'DELETE',
+    url: API_AUTH.LOGOUT,
+  });
+};

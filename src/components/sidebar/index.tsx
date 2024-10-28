@@ -27,7 +27,7 @@ function Sidebar() {
   const { sidebarWidth, setSidebarWidth } = useSidebarStore();
   const { usedVolume, maxVolume } = useProfileStore();
 
-  const [selectedMenu, setSelectedMenu] = useState('모든 파일');
+  const [selectedMenu, setSelectedMenu] = useState('');
   const sideBarRef = useRef(false);
 
   const MIN_WIDTH = 180;
@@ -75,7 +75,7 @@ function Sidebar() {
   };
 
   const handleClickTrash = () => {
-    navigate('./trash');
+    navigate('/trash');
   };
 
   useEffect(() => {
