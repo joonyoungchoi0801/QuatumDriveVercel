@@ -6,6 +6,9 @@ export const API_FILE = Object.freeze({
   CACHE: 'file/insert',
   UPLOAD: 'file/upload',
   FILEINFO: (contentId: number) => `file/${contentId}`,
+  DOWNLOAD: (contentId: number) => `file/download/${contentId}`,
+  PREVIEW: (contentId: number) => `file/preview/${contentId}`,
+  FAVORITE: (contentId: number) => `file/favorite/${contentId}`,
 });
 
 export const API_AUTH = Object.freeze({

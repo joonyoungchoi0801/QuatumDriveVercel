@@ -109,3 +109,44 @@ export const deleteFile = (contentId: number) => {
     },
   });
 };
+
+export const getDownloadFile = (contentId: number) => {
+  return instance({
+    method: 'GET',
+    url: API_FILE.DOWNLOAD(contentId),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    responseType: 'blob',
+  });
+};
+
+export const getPreviewFile = (contentId: number) => {
+  return instance({
+    method: 'GET',
+    url: API_FILE.PREVIEW(contentId),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const postFavoriteFile = (contentId: number) => {
+  return instance({
+    method: 'POST',
+    url: API_FILE.FAVORITE(contentId),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const getFileDetailInfo = (contentId: number) => {
+  return instance({
+    method: 'GET',
+    url: API_FILE.FILEINFO(contentId),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
